@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>cz.creeperface.nukkit.gac</groupId>
+    <artifactId>GAC</artifactId>
+    <version>1.0</version>
+
+    <properties>
+        <kotlin.version>1.3.30</kotlin.version>
+        <lombok.version>1.18.2</lombok.version>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <jars>C:\Users\honza\.m2\repository</jars>
+    </properties>
+
+    <repositories>
+        <repository>
+            <id>nukkitx-repo</id>
+            <name>nukkitx-snapshot</name>
+            <url>https://repo.nukkitx.com/snapshot</url>
+        </repository>
+    </repositories>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.jetbrains.kotlin</groupId>
+                <artifactId>kotlin-maven-plugin</artifactId>
+                <version>${kotlin.version}</version>
+                <executions>
+                    <execution>
+                        <id>compile</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>compile</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>test-compile</id>
+                        <phase>test-compile</phase>
+                        <goals>
+                            <goal>test-compile</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <jvmTarget>1.8</jvmTarget>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.5.1</version>
+                <executions>
+                    <execution>
+                        <id>java-compile</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>compile</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>java-test-compile</id>
+                        <phase>test-compile</phase>
+                        <goals>
+                            <goal>testCompile</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                            <version>${lombok.version}</version>
+                        </path>
+                    </annotationProcessorPaths>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>com.github.wvengen</groupId>
+                <artifactId>proguard-maven-plugin</artifactId>
+                <version>2.0.14</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>proguard</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <obfuscate>true</obfuscate>
+                    <attach>true</attach>
+                    <appendClassifier>false</appendClassifier>
+                    <injar>${project.build.finalName}.jar</injar>
+                    <outjar>${project.build.finalName}-OBFUSCATED.jar</outjar>
+                    <libs>
+                        <lib>${java.home}/lib/rt.jar</lib>
+                        <lib>${java.home}/lib/jce.jar</lib>
+                        <lib>${java.home}/lib/ext/sunjce_provider.jar</lib>
+                    </libs>
+                    <options>
+                        <option>-keepattributes Exceptions</option>
+                        <option>-repackageclasses cz/creeperface/nukkit/gac</option>
+                        <option>-keep class cz.creeperface.nukkit.gac.GTAnticheat</option>
+                        <option>-keep public class cz.creeperface.nukkit.gac.player.NukkitCheatPlayer {
+                            public &lt;init&gt;(...);
+                        }</option>
+                        <option>-keep public class cz.creeperface.nukkit.gac.checks.NukerCheck {
+                            public boolean run(...);
+                        }
+                        </option>
+                        <option>-keep public class cz.creeperface.nukkit.gac.player.SynapseCheatPlayer {
+                            public &lt;init&gt;(...);
+                            }</option>
+                        <!--<option>-libraryjars /Users/mac/.m2/repository/cn/nukkit/nukkit/1.0-SNAPSHOT/nukkit-1.0-SNAPSHOT.jar(!META-INF/versions/**)</option>-->
+                        <!--<option>-injars nukkit-1.0-SNAPSHOT.jar(!META-INF/versions/**.class)</option>-->
+                        <!--<option>-keep class module-info</option>-->
+                        <!--<option>-keepattributes Module*</option>-->
+                        <option>-dontshrink</option>
+                        <option>-allowaccessmodification</option>
+
+
+
+                        <!--<option>-keep @cn.nukkit.event interface * {-->
+                            <!--*;-->
+                            <!--}</option>-->
+                        <!--<option>-keep @interface cn.nukkit.event.EventHandler</option>-->
+                        <!--<option>-keepclasseswithmembernames class * {-->
+                            <!--@cn.nukkit.event.EventHandler &lt;methods&gt;;-->
+                            <!--}</option>-->
+                        <!--<option>-keep class cn.nukkit.event.EventHandler {*;}</option>-->
+                        <!--<option>-keepclassmembers class * { @cn.nukkit.event.EventHandler public *; }</option>-->
+                        <!--<option>-keep @cn.nukkit.event.EventHandler public class *</option>-->
+                    </options>
+                    <exclusions>
+                        <exclusion>
+                            <groupId>org.projectlombok</groupId><artifactId>lombok</artifactId>
+                        </exclusion>
+                    </exclusions>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <dependencies>
+        <!--<dependency>-->
+            <!--<groupId>cn.nukkit</groupId>-->
+            <!--<artifactId>nukkit</artifactId>-->
+            <!--<version>1.0-SNAPSHOT</version>-->
+            <!--<scope>provided</scope>-->
+        <!--</dependency>-->
+        <!--<dependency>-->
+            <!--<groupId>org.itxtech.synapse</groupId>-->
+            <!--<artifactId>synapse-api</artifactId>-->
+            <!--<version>1.0-SNAPSHOT</version>-->
+            <!--<scope>provided</scope>-->
+        <!--</dependency>-->
+        <dependency>
+            <groupId>org.jetbrains.kotlin</groupId>
+            <artifactId>kotlin-stdlib-jdk8</artifactId>
+            <version>${kotlin.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jetbrains.kotlin</groupId>
+            <artifactId>kotlin-test</artifactId>
+            <version>${kotlin.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.jetbrains.kotlin/kotlin-reflect -->
+        <dependency>
+            <groupId>org.jetbrains.kotlin</groupId>
+            <artifactId>kotlin-reflect</artifactId>
+            <version>${kotlin.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>${lombok.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.itxtech.synapse</groupId>
+            <artifactId>SynapseAPI</artifactId>
+            <scope>system</scope>
+            <version>0</version>
+            <optional>false</optional>
+            <systemPath>${basedir}/lib/SynapseAPI.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>gtcore</groupId>
+            <artifactId>GTCore</artifactId>
+            <scope>system</scope>
+            <version>0</version>
+            <optional>false</optional>
+            <systemPath>${basedir}/lib/GTCore.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>cn.nukkit</groupId>
+            <artifactId>nukkitx</artifactId>
+            <scope>system</scope>
+            <version>0</version>
+            <optional>false</optional>
+            <systemPath>${basedir}/lib/nukkitx.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>org.itxtech.synapse</groupId>
+            <artifactId>SynapseAPIX</artifactId>
+            <scope>system</scope>
+            <version>0</version>
+            <optional>false</optional>
+            <systemPath>${basedir}/lib/SynapseAPIX.jar</systemPath>
+        </dependency>
+    </dependencies>
+</project>

@@ -1,0 +1,32 @@
+#GAC configuration file
+version: 1 #do not modify this
+
+#whether GAC will be active in all levels (if not changed below) or not
+default_active: true
+
+#add all worlds where AC should be in the opposite state than #default_active property
+excluded_levels: [""]
+#excluded_levels: ["world1", "test", "survival world"]
+
+#if true, plugin will kick the player if detects cheats
+kick_players: true
+
+#if true, anticheat will checks even OP players
+check_ops: false
+
+#manage all available checks (enable/disable)
+checks:
+  speed: true #vertical and horizontal speed
+  fly: true #fly and other invalid movement checks
+  speedmine: true
+  nuker: false #checks if player can see the block (this check takes a bit more CPU than other checks)
+  glide: true
+  teleport: true
+  noclip: true
+  spam: true
+  reach: true
+  aimbot: true
+
+settings:
+  spam_delay: 8 #delay between messages #currently not implemented
+  hit_range: 4 #max hit range

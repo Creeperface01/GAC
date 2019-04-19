@@ -1,0 +1,2 @@
+kick_player: "&cYou have been kicked for &e%reason%"
+kick_broadcast: "%player% &ehas been kicked by GAC &cReason: &e%reason%"
