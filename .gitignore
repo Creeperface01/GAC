@@ -182,3 +182,4 @@ $RECYCLE.BIN/
 !/lib/
 /GAC.iml
 /NukkitAC.iml
+/src/main/resources/rebel.xml

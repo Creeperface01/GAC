@@ -1,10 +1,12 @@
 Simple anticheat plugin for nukkit
 
-###Installation
+Installation
+--------------
 - download the jar file from https://nukkitx.com/resources/gac.119/
 - put the jar file into plugins directory
 
-###Compiling
+Compiling
+--------------
 run command
 ``mvn package``
 from the project directory
