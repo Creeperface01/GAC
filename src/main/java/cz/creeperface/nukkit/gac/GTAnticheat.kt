@@ -8,7 +8,6 @@ import cn.nukkit.event.level.LevelUnloadEvent
 import cn.nukkit.level.Level
 import cn.nukkit.plugin.PluginBase
 import cn.nukkit.utils.Config
-import cn.nukkit.utils.MainLogger
 import cn.nukkit.utils.PluginException
 import cz.creeperface.nukkit.gac.listener.PlayerListener
 import cz.creeperface.nukkit.gac.listener.SynapseListener
@@ -77,7 +76,7 @@ class GTAnticheat : PluginBase(), Listener {
     }
 
     fun doKickCheck(data: cz.creeperface.nukkit.gac.ACData, p: Player) {
-        if(!GTAnticheat.conf.kick) {
+        if (!GTAnticheat.conf.kick) {
             return
         }
 

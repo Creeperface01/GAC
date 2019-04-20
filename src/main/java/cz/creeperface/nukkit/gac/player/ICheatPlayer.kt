@@ -1,35 +1,45 @@
 package cz.creeperface.nukkit.gac.player
 
 import cn.nukkit.IPlayer
+import cn.nukkit.Player
 import cn.nukkit.block.Block
 import cn.nukkit.math.AxisAlignedBB
 import cn.nukkit.math.Vector3
-import cn.nukkit.network.protocol.MovePlayerPacket
 import cz.creeperface.nukkit.gac.ACData
-import cz.creeperface.nukkit.gac.player.utils.ILocation
 
 /**
  * @author CreeperFace
  */
-interface ICheatPlayer /*: ILocation, IPlayer*/ {
+interface ICheatPlayer : IPlayer {
 
     val acData: ACData
 
-//    val boundingBox: AxisAlignedBB
+    var nextChunkOrderRun: Int
 
-    var blocksUnder: MutableList<Block>?
+    var forceMovement: Vector3?
 
-//    var onGround: Boolean
+    var newPosition: Vector3?
 
-//    var isCollided: Boolean
+    var teleportPosition: Vector3?
 
-//    val connected: Boolean
+    val ySize: Float
 
-//    var teleportPosition: Vector3
+    var startAirTicks: Int
 
-    fun checkGroundState(large: Boolean = false)
+    override fun getPlayer(): Player
 
-    fun getBlocksUnder(bb: AxisAlignedBB?): List<Block>
+    fun checkNearEntities()
 
-    fun handleMovePacket(packet: MovePlayerPacket)
+    fun updateFallState(onGround: Boolean)
+
+    fun setMotion(motion: Vector3): Boolean
+
+    fun getDrag(): Float
+
+    fun getGravity(): Float
+
+    fun getBlocksUnder(boundingBox: AxisAlignedBB?): List<Block>
+
+    fun checkGroundState(large: Boolean)
+
 }

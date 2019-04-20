@@ -23,8 +23,8 @@ class SynapseListener(plugin: Plugin) : Listener {
 
     @EventHandler
     fun onPlayerCreate(e: SynapsePlayerCreationEvent) {
-        if(GTAnticheat.GT_MODE) {
-            if(e.baseClass == SynapsePlayer11::class.java) {
+        if (GTAnticheat.GT_MODE) {
+            if (e.baseClass == SynapsePlayer11::class.java) {
                 e.playerClass = GTSynapseCheatPlayer11::class.java
             } else {
                 e.playerClass = GTSynapseCheatPlayer::class.java

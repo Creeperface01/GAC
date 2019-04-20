@@ -10,7 +10,6 @@ import cn.nukkit.math.Vector3
 import cn.nukkit.network.protocol.AddPlayerPacket
 import cn.nukkit.network.protocol.MovePlayerPacket
 import cn.nukkit.network.protocol.SetEntityDataPacket
-import cn.nukkit.utils.MainLogger
 import cz.creeperface.nukkit.gac.GTAnticheat
 import cz.creeperface.nukkit.gac.utils.CheckType
 import cz.creeperface.nukkit.gac.utils.shouldCheck

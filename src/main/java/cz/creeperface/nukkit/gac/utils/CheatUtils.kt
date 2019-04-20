@@ -109,7 +109,7 @@ object CheatUtils {
 }
 
 fun shouldCheck(entity: Entity, checkType: CheckType? = null): Boolean {
-    return  GTAnticheat.instance.isLevelActive(entity.level) && (checkType == null || GTAnticheat.conf.enabled(checkType)) && entity is Player && (!entity.isOp || GTAnticheat.conf.checkOPs)
+    return GTAnticheat.instance.isLevelActive(entity.level) && (checkType == null || GTAnticheat.conf.enabled(checkType)) && entity is Player && (!entity.isOp || GTAnticheat.conf.checkOPs)
     //MainLogger.getLogger().info("check: $result (${GTAnticheat.instance.isLevelActive(entity.level)}, ${checkType == null || GTAnticheat.conf.enabled(checkType)}, ${entity is Player && (!entity.isOp || GTAnticheat.conf.checkOPs)})")
 
 //    return result

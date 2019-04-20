@@ -31,7 +31,7 @@ class NoCheatTask(
 
             val acData = p.acData
 
-            if(GTAnticheat.conf.kick) {
+            if (GTAnticheat.conf.kick) {
                 val reason = plugin.kickQueue.remove(p.id)
                 if (reason != null) {
                     plugin.punishmentManager.doKick(p, reason)
@@ -77,7 +77,7 @@ class NoCheatTask(
                 points = -1
 
 
-            } else if(shouldCheck(p, CheckType.FLY)){
+            } else if (shouldCheck(p, CheckType.FLY)) {
                 val motionData = acData.motionData
 
                 if (motionData.isEmpty) {

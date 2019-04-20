@@ -244,7 +244,7 @@ object BlockCollisionCheck {
             b as BlockTrapdoor
 
             val blockbb = when {
-                b.isOpen -> when(b.blockFace) {
+                b.isOpen -> when (b.blockFace) {
                     BlockFace.NORTH -> SimpleAxisAlignedBB(0.0, 0.0, 0.8125, 1.0, 1.0, 1.0)
                     BlockFace.EAST -> SimpleAxisAlignedBB(0.0, 0.0, 0.0, 0.1875, 1.0, 1.0)
                     BlockFace.WEST -> SimpleAxisAlignedBB(0.8125, 0.0, 0.0, 1.0, 1.0, 1.0)
@@ -264,7 +264,7 @@ object BlockCollisionCheck {
             b as BlockStairs
 
             b.getBoundingBoxes().forEach {
-                if(bb.intersectsWith(it)) return@calc true
+                if (bb.intersectsWith(it)) return@calc true
             }
 
             return@calc false
