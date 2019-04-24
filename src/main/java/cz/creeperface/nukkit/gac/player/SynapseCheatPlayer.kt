@@ -383,13 +383,9 @@ class SynapseCheatPlayer(interfaz: SourceInterface, entry: SynapseEntry, clientI
             }
         }
 
-        this.motionX = motion.x
-        this.motionY = motion.y
-        this.motionZ = motion.z
-
-        if (!this.justCreated) {
-            this.updateMovement()
-        }
+        //this.motionX = motion.x
+        //this.motionY = motion.y
+        //this.motionZ = motion.z
 
         if (this.chunk != null) {
             //this.getLevel().addEntityMotion(this.chunk.getX(), this.chunk.getZ(), this.getId(), this.motionX, this.motionY, this.motionZ);
