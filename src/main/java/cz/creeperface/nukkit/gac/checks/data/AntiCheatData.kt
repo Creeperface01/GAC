@@ -13,6 +13,8 @@ class AntiCheatData {
 
 
     var lastOnGround: Long = 0
+    
+    var freeriding: Long = 0
 
 
     lateinit var lastGroundPos: Location
