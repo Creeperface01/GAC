@@ -64,6 +64,13 @@ class PlayerListener(private val plugin: GTAnticheat) : Listener {
 
         acData.fakePlayer.update(from, to)
         //System.out.println(this.getServer().getTick());
+        val cheatData = acData.antiCheatData
+
+        if(cheatData.freeriding <= 5){
+            if(p.riding != null){
+                cheatData.freeriding++;
+            }
+        }
 
         if (p.gamemode > 0 || to.x == from.x && to.y == from.y && to.z == from.z || p.adventureSettings.get(AdventureSettings.Type.FLYING) || p.riding != null) {
             return
@@ -151,6 +158,14 @@ class PlayerListener(private val plugin: GTAnticheat) : Listener {
 
             cheatData.horizontalFlightPoints = 0
             cheatData.flyPoints = 0
+            if(cheatData.freeriding > 0){
+                if(p.riding == null){
+                    cheatData.freeriding--;
+                }
+                cheatData.lastOnGround = time
+                cheatData.lastGroundPos = pLoc
+                cheatData.isOnGround = true
+            }
             //System.out.println("ground");
         } else {
             cheatData.isOnGround = false
