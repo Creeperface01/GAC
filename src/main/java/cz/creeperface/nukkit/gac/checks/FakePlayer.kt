@@ -23,8 +23,10 @@ class FakePlayer : Location() {
     private val random = NukkitRandom()
 
     private var spawnCount = 0
+    private var initialized = false
 
     fun init(p: Player) {
+        initialized = true
         player = p
 
         if (!GTAnticheat.conf.enabled(CheckType.AIMBOT)) {
@@ -55,7 +57,7 @@ class FakePlayer : Location() {
     }
 
     fun update(from: Location?, to: Location) {
-        if (!shouldCheck(this.player, CheckType.AIMBOT)) {
+        if (!initialized || !shouldCheck(this.player, CheckType.AIMBOT)) {
             return
         }
 

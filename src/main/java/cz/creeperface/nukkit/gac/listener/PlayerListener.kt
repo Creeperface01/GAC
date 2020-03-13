@@ -403,8 +403,6 @@ class PlayerListener(private val plugin: GTAnticheat) : Listener {
         val data = p.acData
         data.speedData.lastNonSpeedPos = e.to
 
-        //System.out.println("teleport: "+e.getCause().name());
-
         if (e.cause == PlayerTeleportEvent.TeleportCause.PLUGIN) {
             val time = System.currentTimeMillis()
 

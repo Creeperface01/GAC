@@ -63,7 +63,7 @@ class GTAnticheat : PluginBase(), Listener {
         GT_MODE = server.pluginManager.getPlugin("GTCore") != null
     }
 
-    fun onJump(p: Player, data: cz.creeperface.nukkit.gac.ACData) {
+    fun onJump(p: Player, data: ACData) {
         val cheatData = data.antiCheatData
 
         val time = System.currentTimeMillis()
@@ -75,7 +75,7 @@ class GTAnticheat : PluginBase(), Listener {
         //cheatData.setLastOnGround(time);
     }
 
-    fun doKickCheck(data: cz.creeperface.nukkit.gac.ACData, p: Player) {
+    fun doKickCheck(data: ACData, p: Player) {
         if (!GTAnticheat.conf.kick) {
             return
         }

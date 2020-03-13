@@ -17,7 +17,7 @@ import cz.creeperface.nukkit.gac.ACData
 import cz.creeperface.nukkit.gac.GTAnticheat
 import cz.creeperface.nukkit.gac.checks.PacketCountCheck
 import cz.creeperface.nukkit.gac.checks.collidesWith
-import java.util.HashMap
+import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.set
 
@@ -35,7 +35,7 @@ class CheatPlayer(val p: Player, cheatPlayer: ICheatPlayer) : ICheatPlayer by (c
     }
 
     fun handlePacket(packet: DataPacket): Boolean {
-        this.p.apply {
+        with(this.p) {
             if (packet.pid() == MovePlayerPacket.NETWORK_ID) {
                 handleMovePacket(packet as MovePlayerPacket)
                 return true
@@ -67,7 +67,7 @@ class CheatPlayer(val p: Player, cheatPlayer: ICheatPlayer) : ICheatPlayer by (c
     }
 
     fun handleMovePacket(packet: MovePlayerPacket) {
-        this.p.apply {
+        with(this.p) {
 
             if (!isConnected) {
                 return
@@ -133,7 +133,7 @@ class CheatPlayer(val p: Player, cheatPlayer: ICheatPlayer) : ICheatPlayer by (c
                     }
 
                     val newPosV2 = Vector2(newPos.x, newPos.z)
-                    val distance = newPosV2.distance(this.getX(), this.getX())
+                    val distance = newPosV2.distance(this.getX(), this.getZ())
 
                     if (!revert && distanceSquared != 0.0) {
                         val dx = newPos.x - this.getX()
@@ -199,7 +199,7 @@ class CheatPlayer(val p: Player, cheatPlayer: ICheatPlayer) : ICheatPlayer by (c
                                 if (to != moveEvent.to) {
                                     this.teleport(moveEvent.to, null)
                                 } else {
-                                    this.addMovement(this.getX(), this.getY() + this.eyeHeight.toDouble(), this.getZ(), this.getYaw(), this.getPitch(), this.getYaw())
+                                    this.addMovement(this.getX(), this.getY(), this.getZ(), this.getYaw(), this.getPitch(), this.getYaw())
                                 }
 
                                 updateFallState(this.isOnGround())
@@ -219,7 +219,7 @@ class CheatPlayer(val p: Player, cheatPlayer: ICheatPlayer) : ICheatPlayer by (c
                         this.speed = from.subtract(to)
                     }
 
-                    if (!revert && this.isFoodEnabled) {
+                    if (!revert && (this.isFoodEnabled || this.server.difficulty == 0)) {
                         hungerUpdate(distance)
                     }
 
@@ -255,35 +255,34 @@ class CheatPlayer(val p: Player, cheatPlayer: ICheatPlayer) : ICheatPlayer by (c
     }
 
     private fun hungerUpdate(dist: Double) {
-        this.p.apply {
+        with(this.p) {
             var distance = dist
 
-            if ((this.isSurvival || this.isAdventure) && distance >= 0.05) {
-                var jump = 0.0
-                val swimming = if (this.isInsideOfWater) 0.015 * distance else 0.0
-                if (swimming != 0.0) {
-                    distance = 0.0
-                }
+            if (this.isSurvival || this.isAdventure) {
 
-                if (this.isSprinting) {
-                    if (this.inAirTicks == 3 && swimming == 0.0) {
-                        jump = 0.7
+                //UpdateFoodExpLevel
+                if (distance >= 0.05) {
+                    var jump = 0.0
+                    val swimming: Double = if (this.isInsideOfWater) 0.015 * distance else 0.0
+                    if (swimming != 0.0) distance = 0.0
+                    if (this.isSprinting) {  //Running
+                        if (inAirTicks == 3 && swimming == 0.0) {
+                            jump = 0.7
+                        }
+                        foodData.updateFoodExpLevel(0.06 * distance + jump + swimming)
+                    } else {
+                        if (inAirTicks == 3 && swimming == 0.0) {
+                            jump = 0.2
+                        }
+                        foodData.updateFoodExpLevel(0.01 * distance + jump + swimming)
                     }
-
-                    this.foodData.updateFoodExpLevel(0.1 * distance + jump + swimming)
-                } else {
-                    if (this.inAirTicks == 3 && swimming == 0.0) {
-                        jump = 0.2
-                    }
-
-                    this.foodData.updateFoodExpLevel(0.01 * distance + jump + swimming)
                 }
             }
         }
     }
 
     override fun checkGroundState(large: Boolean) {
-        this.p.apply {
+        with(this.p) {
             var onGround = false
 
             val realBB = this.boundingBox.clone()
@@ -312,7 +311,7 @@ class CheatPlayer(val p: Player, cheatPlayer: ICheatPlayer) : ICheatPlayer by (c
     }
 
     override fun getBlocksUnder(boundingBox: AxisAlignedBB?): List<Block> {
-        this.p.apply {
+        with(this.p) {
             var bb = boundingBox
 
             if (blocksUnder.isEmpty()) {
@@ -343,7 +342,7 @@ class CheatPlayer(val p: Player, cheatPlayer: ICheatPlayer) : ICheatPlayer by (c
     }
 
     override fun setMotion(motion: Vector3): Boolean {
-        this.p.apply {
+        with(this.p) {
             if (!this.justCreated) {
                 val ev = EntityMotionEvent(this, motion)
                 this.server.pluginManager.callEvent(ev)
@@ -378,7 +377,7 @@ class CheatPlayer(val p: Player, cheatPlayer: ICheatPlayer) : ICheatPlayer by (c
     }
 
     private fun processPacketCheck(packetEntry: PacketCountCheck.Entry): Boolean {
-        this.p.apply {
+        with(this.p) {
             ++packetEntry.packetCount
             val tick = this.server.tick
             if (tick - packetEntry.lastCheckTick >= 20) {
