@@ -14,6 +14,7 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <jars>C:\Users\honza\.m2\repository</jars>
+        <jre.path>C:\Program Files\Java\jre1.8.0_241</jre.path>
     </properties>
 
     <repositories>
@@ -99,9 +100,9 @@
                     <injar>${project.build.finalName}.jar</injar>
                     <outjar>${project.build.finalName}-OBFUSCATED.jar</outjar>
                     <libs>
-                        <lib>${java.home}/lib/rt.jar</lib>
-                        <lib>${java.home}/lib/jce.jar</lib>
-                        <lib>${java.home}/lib/ext/sunjce_provider.jar</lib>
+                        <lib>${jre.path}/lib/rt.jar</lib>
+                        <lib>${jre.path}/lib/jce.jar</lib>
+                        <lib>${jre.path}/lib/ext/sunjce_provider.jar</lib>
                     </libs>
                     <options>
                         <option>-keepattributes Exceptions</option>

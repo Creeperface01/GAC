@@ -2,7 +2,6 @@
 <project version="4">
   <component name="CompilerConfiguration">
     <annotationProcessing>
-      <profile default="true" name="Default" enabled="true" />
       <profile name="Annotation profile for GAC" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
@@ -15,7 +14,6 @@
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="GAC" target="1.8" />
-      <module name="NukkitAC" target="1.8" />
     </bytecodeTargetLevel>
   </component>
 </project>
