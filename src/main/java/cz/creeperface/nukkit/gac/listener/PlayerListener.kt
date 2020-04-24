@@ -45,6 +45,7 @@ class PlayerListener(private val plugin: GTAnticheat) : Listener {
         registerEvent(this, plugin, PlayerJoinEvent::class.java, { onJoin(it) }, true, EventPriority.MONITOR)
         registerEvent(this, plugin, PlayerCreationEvent::class.java, { onPlayerCreate(it) }, true, EventPriority.MONITOR)
         registerEvent(this, plugin, PlayerInvalidMoveEvent::class.java, { it.setCancelled() }, true, EventPriority.HIGHEST)
+        registerEvent(this, plugin, PlayerToggleGlideEvent::class.java, { onPlayerGlide(it) }, true, EventPriority.MONITOR)
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
@@ -63,9 +64,19 @@ class PlayerListener(private val plugin: GTAnticheat) : Listener {
         var revert: Boolean
 
         acData.fakePlayer.update(from, to)
+        val cheatData = acData.antiCheatData
         //System.out.println(this.getServer().getTick());
 
-        if (p.gamemode > 0 || to.x == from.x && to.y == from.y && to.z == from.z || p.adventureSettings.get(AdventureSettings.Type.FLYING) || p.riding != null) {
+        if (p.riding != null || p.isGliding) {
+            cheatData.lastOnGround = System.currentTimeMillis()
+            cheatData.lastGroundPos = p.clone()
+            cheatData.isOnGround = true
+
+            cheatData.horizontalFlightPoints = 0
+            cheatData.flyPoints = 0
+        }
+
+        if (p.gamemode > 0 || to.x == from.x && to.y == from.y && to.z == from.z || p.adventureSettings.get(AdventureSettings.Type.FLYING) || p.riding != null || p.isGliding) {
             return
         }
 
@@ -77,20 +88,20 @@ class PlayerListener(private val plugin: GTAnticheat) : Listener {
 
         //System.out.println("ground: "+p.onGround);
         p.checkGroundState(false)
-        acData.antiCheatData.largeGroundStateCheck = false
+        cheatData.largeGroundStateCheck = false
         //System.out.println("ground2: "+p.onGround);
 
         val time = System.currentTimeMillis()
 
-        if (time - acData.antiCheatData.lastTeleport < 5000) {
-            //System.out.println("tp distance: "+from.distance(to)+"   tp: "+data.antiCheatData.teleportPosition.distance(to));
-        }
+//        if (time - acData.antiCheatData.lastTeleport < 5000) {
+        //System.out.println("tp distance: "+from.distance(to)+"   tp: "+data.antiCheatData.teleportPosition.distance(to));
+//        }
 
-        if (acData.antiCheatData.isTeleport) {
-            acData.antiCheatData.isTeleport = false
+        if (cheatData.isTeleport) {
+            cheatData.isTeleport = false
             BlockCollisionCheck.run(e, acData, time, false)
-            acData.antiCheatData.lastPos = to
-            acData.antiCheatData.lastGroundPos = to
+            cheatData.lastPos = to
+            cheatData.lastGroundPos = to
             return
         }
 
@@ -125,8 +136,6 @@ class PlayerListener(private val plugin: GTAnticheat) : Listener {
                 }
             }
         }
-
-        val cheatData = acData.antiCheatData
 
         val moveUp = to.y >= from.y
 
@@ -593,5 +602,18 @@ class PlayerListener(private val plugin: GTAnticheat) : Listener {
     @EventHandler
     fun onPlayerCreate(e: PlayerCreationEvent) {
         e.playerClass = NukkitCheatPlayer::class.java
+    }
+
+    @EventHandler
+    fun onPlayerGlide(e: PlayerToggleGlideEvent) {
+        val p = e.player
+
+        if (p !is ICheatPlayer) {
+            return
+        }
+
+        if (!GTAnticheat.conf.enableElytra) {
+            e.setCancelled()
+        }
     }
 }

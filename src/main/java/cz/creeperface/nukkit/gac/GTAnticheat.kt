@@ -200,6 +200,14 @@ class GTAnticheat : PluginBase(), Listener {
         saveDefaultConfig()
         val cfg = config
 
+        val version = cfg.getInt("version")
+
+        if (version < Configuration.VERSION) {
+            logger.warning("You are using an older config version, some properties are probably missing")
+        } else if (version > Configuration.VERSION) {
+            logger.warning("You are using config from a newer GAC version, some properties might be incompatible")
+        }
+
         val default = cfg.getBoolean("default_active")
         val excluded = cfg.getStringList("excluded_levels").toSet()
         val kick = cfg.getBoolean("kick_players")
@@ -208,6 +216,7 @@ class GTAnticheat : PluginBase(), Listener {
         val settings = cfg.getSection("settings")
         val spamDelay = settings.getInt("spam_delay")
         val hitRange = settings.getDouble("hit_range")
+        val enableElytra = settings.getBoolean("disable_elytra", false)
 
         val map = mutableMapOf<Int, Boolean>()
         val checks = cfg.getSection("checks")
@@ -223,6 +232,6 @@ class GTAnticheat : PluginBase(), Listener {
         map[CheckType.TELEPORT.ordinal] = checks.getBoolean("teleport")
         map[CheckType.AIMBOT.ordinal] = checks.getBoolean("aimbot")
 
-        conf = Configuration(default, excluded, kick, checkOps, map, spamDelay, hitRange)
+        conf = Configuration(default, excluded, kick, checkOps, map, spamDelay, hitRange, enableElytra)
     }
 }

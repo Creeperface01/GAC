@@ -8,7 +8,6 @@ import cn.nukkit.math.AxisAlignedBB
 import cn.nukkit.math.SimpleAxisAlignedBB
 import cn.nukkit.math.Vector3
 import cn.nukkit.utils.BlockIterator
-import cn.nukkit.utils.MainLogger
 import cz.creeperface.nukkit.gac.utils.mutable
 import java.util.*
 import kotlin.collections.ArrayList
@@ -28,7 +27,6 @@ object NukerCheck {
 
         bb.expand(-0.01, -0.01, -0.01)
 
-        MainLogger.getLogger().info(bb.toString())
         val positions = HashSet<Vector3>()
 
         if (pos.x > bb.maxX || pos.x < bb.minX) {

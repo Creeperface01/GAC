@@ -10,11 +10,16 @@ data class Configuration(
         val checkOPs: Boolean,
         val checks: Map<Int, Boolean>,
         val spamDelay: Int,
-        val hitRange: Double
+        val hitRange: Double,
+        val enableElytra: Boolean
 ) {
 
     fun enabled(checkType: CheckType) = this.checks[checkType.ordinal] ?: false
 
+    companion object {
+
+        const val VERSION = 2
+    }
 }
 
 enum class CheckType {
