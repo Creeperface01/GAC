@@ -212,11 +212,11 @@ class GTAnticheat : PluginBase(), Listener {
         val excluded = cfg.getStringList("excluded_levels").toSet()
         val kick = cfg.getBoolean("kick_players")
         val checkOps = cfg.getBoolean("check_ops")
+        val enableElytra = cfg.getBoolean("enable_elytra", false)
 
         val settings = cfg.getSection("settings")
         val spamDelay = settings.getInt("spam_delay")
         val hitRange = settings.getDouble("hit_range")
-        val enableElytra = settings.getBoolean("disable_elytra", false)
 
         val map = mutableMapOf<Int, Boolean>()
         val checks = cfg.getSection("checks")
