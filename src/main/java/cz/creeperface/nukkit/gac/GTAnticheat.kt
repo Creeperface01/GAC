@@ -54,8 +54,6 @@ class GTAnticheat : PluginBase(), Listener {
         registerEvent(this, this, LevelUnloadEvent::class.java, { onLevelUnload(it) })
 
         this.server.levels.values.forEach { level -> onLevelLoad(level) }
-
-        GT_MODE = server.pluginManager.getPlugin("GTCore") != null
     }
 
     fun onJump(p: Player, data: ACData) {
@@ -111,20 +109,6 @@ class GTAnticheat : PluginBase(), Listener {
     }
 
     fun isLevelActive(level: Level) = enabledLevels.contains(level.id)
-
-    companion object {
-
-        @JvmStatic
-        lateinit var instance: GTAnticheat
-            private set
-
-        val DEBUG = true
-
-        var GT_MODE = false
-
-        lateinit var conf: Configuration
-            private set
-    }
 
     /*@EventHandler
     public void onDataPacketReceive(DataPacketReceiveEvent e) {
@@ -232,8 +216,20 @@ class GTAnticheat : PluginBase(), Listener {
         if (conf.enabled(CheckType.FLY) && server.allowFlight) {
             val fly = Server::class.java.getDeclaredField("getAllowFlight")
             fly.isAccessible = true
-//            fly.set(this.server, false)
+            fly.set(this.server, false)
             logger.warning("Disabling server flight option because of GAC fly check enabled")
         }
+    }
+
+    companion object {
+
+        @JvmStatic
+        lateinit var instance: GTAnticheat
+            private set
+
+        val DEBUG = false
+
+        lateinit var conf: Configuration
+            private set
     }
 }

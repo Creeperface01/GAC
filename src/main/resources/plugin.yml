@@ -4,5 +4,5 @@ api: ["1.0.0"]
 main: cz.creeperface.nukkit.gac.GTAnticheat
 author: "CreeperFace"
 description: "Basic AntiCheat plugin for Nukkit"
-softdepend: ["SynapseAPI", "GTCore"]
+softdepend: ["SynapseAPI"]
 depend: ["KotlinLib"]
