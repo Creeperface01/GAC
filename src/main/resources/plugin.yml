@@ -1,5 +1,5 @@
 name: "GAC"
-version: "1.0.8"
+version: "1.1"
 api: ["1.0.0"]
 main: cz.creeperface.nukkit.gac.GTAnticheat
 author: "CreeperFace"

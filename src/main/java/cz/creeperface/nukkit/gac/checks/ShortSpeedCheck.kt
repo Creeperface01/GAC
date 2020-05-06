@@ -6,6 +6,7 @@ import cn.nukkit.math.Vector2
 import cz.creeperface.nukkit.gac.GTAnticheat
 import cz.creeperface.nukkit.gac.checks.data.SpeedData
 import cz.creeperface.nukkit.gac.utils.CheckType
+import cz.creeperface.nukkit.gac.utils.debug
 
 /**
  * Created by CreeperFace on 19. 11. 2016.
@@ -31,7 +32,7 @@ object ShortSpeedCheck {
         val cheatData = acData.antiCheatData
         if (cheatData.isInLiquid) {
             if (from.y == to.y && !p.onGround && p.distance(cheatData.lastGroundPos) > 0.3) {
-                if (GTAnticheat.DEBUG) println("water revert")
+                debug { "water revert" }
                 e.setCancelled()
                 return false
             }
@@ -93,7 +94,7 @@ object ShortSpeedCheck {
                 val diff = distance - maxDistance
 
                 if (diff > 0.5 || cheatData.speedPoints > 10) {
-                    if (GTAnticheat.DEBUG) println("horiz: $diff")
+                    debug { "horiz: $diff" }
                     e.to = speedData.lastNonSpeedPos
                     cheatData.speedPoints = 0
                     return false
@@ -124,7 +125,7 @@ object ShortSpeedCheck {
                 if (diff > maxSpeed) {
 
                     if (diff - maxSpeed > 0.5 && GTAnticheat.conf.enabled(CheckType.TELEPORT)) {
-                        if (GTAnticheat.DEBUG) println("vert: $diff   max: $maxSpeed")
+                        debug { "vert: $diff   max: $maxSpeed" }
                         e.setCancelled()
                         return false
                     }
@@ -134,7 +135,7 @@ object ShortSpeedCheck {
                             speedData.successCount = 0
                             //data.speedData.wasRevert = true;
                         } else {
-                            if (GTAnticheat.DEBUG) println("horizontal speed: " + (to.y - from.y))
+                            debug { "horizontal speed: " + (to.y - from.y) }
                             cheatData.speedPoints++
                             e.setCancelled()
                             return false

@@ -36,11 +36,6 @@ class GTAnticheat : PluginBase(), Listener {
         if (!KotlinLibDownloader.check(this)) {
             throw PluginException("KotlinLib could not be found")
         }
-
-        //disable default anticheat
-        val fly = Server::class.java.getDeclaredField("getAllowFlight")
-        fly.isAccessible = true
-        fly.set(this.server, true)
     }
 
     override fun onEnable() {
@@ -123,7 +118,7 @@ class GTAnticheat : PluginBase(), Listener {
         lateinit var instance: GTAnticheat
             private set
 
-        val DEBUG = false
+        val DEBUG = true
 
         var GT_MODE = false
 
@@ -233,5 +228,12 @@ class GTAnticheat : PluginBase(), Listener {
         map[CheckType.AIMBOT.ordinal] = checks.getBoolean("aimbot")
 
         conf = Configuration(default, excluded, kick, checkOps, map, spamDelay, hitRange, enableElytra)
+
+        if (conf.enabled(CheckType.FLY) && server.allowFlight) {
+            val fly = Server::class.java.getDeclaredField("getAllowFlight")
+            fly.isAccessible = true
+//            fly.set(this.server, false)
+            logger.warning("Disabling server flight option because of GAC fly check enabled")
+        }
     }
 }

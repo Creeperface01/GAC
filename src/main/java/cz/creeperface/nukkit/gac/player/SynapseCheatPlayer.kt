@@ -1,5 +1,6 @@
 package cz.creeperface.nukkit.gac.player
 
+import cn.nukkit.level.Location
 import cn.nukkit.math.AxisAlignedBB
 import cn.nukkit.math.Vector3
 import cn.nukkit.network.SourceInterface
@@ -48,6 +49,9 @@ class SynapseCheatPlayer(interfaz: SourceInterface, entry: SynapseEntry, clientI
         set(value) {
             super.startAirTicks = value
         }
+
+    override val currentPos: Location
+        get() = cheatPlayer.currentPos
 
     override fun getDrag(): Float {
         return super.getDrag()

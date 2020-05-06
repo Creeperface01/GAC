@@ -2,6 +2,7 @@ package cz.creeperface.nukkit.gac.player
 
 import cn.nukkit.Player
 import cn.nukkit.block.Block
+import cn.nukkit.block.BlockID
 import cn.nukkit.entity.item.EntityBoat
 import cn.nukkit.event.entity.EntityMotionEvent
 import cn.nukkit.event.player.PlayerMoveEvent
@@ -17,21 +18,25 @@ import cz.creeperface.nukkit.gac.ACData
 import cz.creeperface.nukkit.gac.GTAnticheat
 import cz.creeperface.nukkit.gac.checks.PacketCountCheck
 import cz.creeperface.nukkit.gac.checks.collidesWith
-import java.util.*
-import kotlin.collections.ArrayList
 import kotlin.collections.set
+import kotlin.math.ln
 
 class CheatPlayer(val p: Player, cheatPlayer: ICheatPlayer) : ICheatPlayer by (cheatPlayer) {
 
-    override val acData: ACData = ACData(p)
+    override val acData = ACData(p)
 
     private val blocksUnder = mutableListOf<Block>()
 
-    private val packetsData = object : HashMap<Byte, PacketCountCheck.Entry>() {
-        init {
-            put(InteractPacket.NETWORK_ID, PacketCountCheck().Entry())
-            put(MovePlayerPacket.NETWORK_ID, PacketCountCheck().Entry())
-        }
+    override var currentPos = p.clone()
+        private set
+
+    private val packetsData = mapOf(
+            InteractPacket.NETWORK_ID to PacketCountCheck().Entry(),
+            MovePlayerPacket.NETWORK_ID to PacketCountCheck().Entry()
+    )
+
+    init {
+        this.p.setCheckMovement(false)
     }
 
     fun handlePacket(packet: DataPacket): Boolean {
@@ -55,7 +60,7 @@ class CheatPlayer(val p: Player, cheatPlayer: ICheatPlayer) : ICheatPlayer by (c
                     if (!motionData.isEmpty && !motionData.ground) {
                         val timeY = motionData.timeY
 
-                        if (time > timeY && time > motionData.time && motionData.groundTime != (-1).toLong() && time - motionData.groundTime > 1500) {
+                        if (time > timeY && time > motionData.time && motionData.groundTime != -1L && time - motionData.groundTime > 1500) {
                             motionData.ground = true
                         }
                     }
@@ -160,7 +165,7 @@ class CheatPlayer(val p: Player, cheatPlayer: ICheatPlayer) : ICheatPlayer by (c
                             this.x = newPos.x
                             this.y = newPos.y
                             this.z = newPos.z
-                            val radius = (this.width / 2).toDouble()
+                            val radius = this.width / 2
                             this.getBoundingBox().setBounds(this.getX() - radius, this.getY(), this.getZ() - radius, this.getX() + radius, this.getY() + this.height, this.getZ() + radius)
                         }
                     }
@@ -191,6 +196,7 @@ class CheatPlayer(val p: Player, cheatPlayer: ICheatPlayer) : ICheatPlayer by (c
                             this.blocksAround = null
                             this.collisionBlocks = null
                             blocksUnder.clear()
+                            currentPos = to.clone()
 
                             this.server.pluginManager.callEvent(moveEvent)
 
@@ -263,7 +269,7 @@ class CheatPlayer(val p: Player, cheatPlayer: ICheatPlayer) : ICheatPlayer by (c
                 //UpdateFoodExpLevel
                 if (distance >= 0.05) {
                     var jump = 0.0
-                    val swimming: Double = if (this.isInsideOfWater) 0.015 * distance else 0.0
+                    val swimming = if (this.isInsideOfWater) 0.015 * distance else 0.0
                     if (swimming != 0.0) distance = 0.0
                     if (this.isSprinting) {  //Running
                         if (inAirTicks == 3 && swimming == 0.0) {
@@ -299,9 +305,13 @@ class CheatPlayer(val p: Player, cheatPlayer: ICheatPlayer) : ICheatPlayer by (c
             val bb = realBB.clone()
             bb.minY -= 0.6
             for (block in getBlocksUnder(bb)) {
-                if (!block.canPassThrough() && block.collidesWith(realBB)) {
+                if (!onGround && !block.canPassThrough() && block.collidesWith(realBB)) {
                     onGround = true
                     break
+                }
+
+                if (block.id == BlockID.ICE) {
+                    acData.collisionData.lastIcePos = currentPos
                 }
             }
 
@@ -369,7 +379,7 @@ class CheatPlayer(val p: Player, cheatPlayer: ICheatPlayer) : ICheatPlayer by (c
             }
 
             if (this.motionY > 0.0) {
-                startAirTicks = (-Math.log(getGravity().toDouble() / (getGravity().toDouble() + getDrag().toDouble() * this.motionY)) / getDrag().toDouble() * 2.0 + 5.0).toInt()
+                startAirTicks = (-ln(getGravity() / (getGravity() + getDrag() * this.motionY)) / getDrag() * 2 + 5).toInt()
             }
 
             return true

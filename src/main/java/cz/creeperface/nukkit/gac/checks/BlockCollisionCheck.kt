@@ -1,12 +1,12 @@
 package cz.creeperface.nukkit.gac.checks
 
+//import cn.nukkit.math.SimpleAxisAlignedBB
 import cn.nukkit.block.*
 import cn.nukkit.event.player.PlayerMoveEvent
 import cn.nukkit.item.Item
 import cn.nukkit.level.Level
 import cn.nukkit.math.*
-//import cn.nukkit.math.SimpleAxisAlignedBB
-import cz.creeperface.nukkit.gac.GTAnticheat
+import cz.creeperface.nukkit.gac.utils.debug
 import cz.creeperface.nukkit.gac.utils.getBoundingBoxes
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap
 import java.util.*
@@ -100,7 +100,7 @@ object BlockCollisionCheck {
 
             if (revert) {
                 e.to = collisionData.lastFreePos
-                if (GTAnticheat.DEBUG) println("collision revert")
+                debug { "collision revert" }
                 return false
             }
 

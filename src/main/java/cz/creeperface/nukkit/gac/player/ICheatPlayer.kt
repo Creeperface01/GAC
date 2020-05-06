@@ -3,6 +3,7 @@ package cz.creeperface.nukkit.gac.player
 import cn.nukkit.IPlayer
 import cn.nukkit.Player
 import cn.nukkit.block.Block
+import cn.nukkit.level.Location
 import cn.nukkit.math.AxisAlignedBB
 import cn.nukkit.math.Vector3
 import cz.creeperface.nukkit.gac.ACData
@@ -25,6 +26,8 @@ interface ICheatPlayer : IPlayer {
     val ySize: Float
 
     var startAirTicks: Int
+
+    val currentPos: Location
 
     override fun getPlayer(): Player
 

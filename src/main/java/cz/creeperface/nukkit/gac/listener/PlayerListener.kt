@@ -57,7 +57,7 @@ class PlayerListener(private val plugin: GTAnticheat) : Listener {
         }
 
         val from = e.from
-        val to = e.to.clone()
+        val to = p.currentPos
 
         val acData = p.acData
 
@@ -69,14 +69,16 @@ class PlayerListener(private val plugin: GTAnticheat) : Listener {
 
         if (p.riding != null || p.isGliding) {
             cheatData.lastOnGround = System.currentTimeMillis()
-            cheatData.lastGroundPos = p.clone()
+            cheatData.lastGroundPos = p.currentPos
             cheatData.isOnGround = true
+            debug { "set ground pos (riding)" }
 
             cheatData.horizontalFlightPoints = 0
             cheatData.flyPoints = 0
         }
 
         if (p.gamemode > 0 || to.x == from.x && to.y == from.y && to.z == from.z || p.adventureSettings.get(AdventureSettings.Type.FLYING) || p.riding != null || p.isGliding) {
+            debug { "allowed fly" }
             return
         }
 
@@ -102,6 +104,7 @@ class PlayerListener(private val plugin: GTAnticheat) : Listener {
             BlockCollisionCheck.run(e, acData, time, false)
             cheatData.lastPos = to
             cheatData.lastGroundPos = to
+            debug { "set ground pos (teleport)" }
             return
         }
 
@@ -119,7 +122,7 @@ class PlayerListener(private val plugin: GTAnticheat) : Listener {
         bb2.minY = bb2.minY + 0.6
         bb2.expand(-0.2, 0.0, -0.2)
 
-        val pLoc = p.clone()
+        val pLoc = p.currentPos
 
         val motionData = acData.motionData
         if (!motionData.isEmpty && !motionData.ground) {
@@ -151,16 +154,32 @@ class PlayerListener(private val plugin: GTAnticheat) : Listener {
         cheatData.isLastPacketOnGround = p.onGround
 
         //System.out.println("ground3 "+p.onGround);
-        if (revert || p.onGround || p.riding != null || p.adventureSettings.get(AdventureSettings.Type.ALLOW_FLIGHT) || !NoCheatTask.isInAir(p, acData.antiCheatData)) {
+        if (revert || p.onGround || p.riding != null || p.adventureSettings.get(AdventureSettings.Type.FLYING) || !NoCheatTask.isInAir(p, acData.antiCheatData)) {
             if (p.onGround) {
                 cheatData.lastOnGround = time
                 cheatData.lastGroundPos = pLoc
                 cheatData.isOnGround = true
+                debug { "set ground pos (ground)" }
+            }
+
+            if (GTAnticheat.DEBUG) {
+                if (revert) {
+                    debug { "revert" }
+                }
+
+                if (p.riding != null) {
+                    debug { "riding" }
+                }
+
+                if (p.adventureSettings.get(AdventureSettings.Type.FLYING)) {
+                    debug { "allow flight" }
+                }
+
+                debug { "ground" }
             }
 
             cheatData.horizontalFlightPoints = 0
             cheatData.flyPoints = 0
-            //System.out.println("ground");
         } else {
             cheatData.isOnGround = false
 
@@ -175,7 +194,9 @@ class PlayerListener(private val plugin: GTAnticheat) : Listener {
                 glide = inAirTime > 3000 && time - cheatData.lastJump > 3000 && (from.y - to.y >= expectedMotionY || to.y > expectedY) && to.y - expectedY > 5
             }
 
+            debug { "glide: $glide  moveUp: $moveUp" }
             if (to.y > -20 && ((GTAnticheat.conf.enabled(CheckType.FLY) && moveUp) || glide)) {
+                debug { "check fly" }
                 if (!acData.motionData.isEmpty && !acData.motionData.ground) {
 
                     val v = Vector2(motionData.fromX, motionData.fromZ)
@@ -190,9 +211,7 @@ class PlayerListener(private val plugin: GTAnticheat) : Listener {
                         //System.out.println("from: "+v.toString()+"       pPos: "+p.getPosition().toString());
                         //System.out.println("revert, currY: "+to.y+"  maxY: "+motionData.get("y")+"  distance: "+v.distance(v2)+"   pDistance: "+pDistance);
                         e.setCancelled()
-                        if (GTAnticheat.DEBUG) {
-                            println("revert motion")
-                        }
+                        debug { "revert motion" }
                     }
                 } else {
                     val pos = cheatData.lastGroundPos
@@ -220,7 +239,8 @@ class PlayerListener(private val plugin: GTAnticheat) : Listener {
                             //data.collisionData.onClimbable = true;
                             cheatData.isOnGround = true
                             cheatData.lastOnGround = time
-                            cheatData.lastGroundPos = p.location.clone()
+                            cheatData.lastGroundPos = p.currentPos
+                            debug { "set ground pos (climbable)" }
                         }
                     }
 
@@ -258,7 +278,7 @@ class PlayerListener(private val plugin: GTAnticheat) : Listener {
 
                             if (pos.y >= to.y || glide) {
 
-                                if (GTAnticheat.DEBUG) println("normal revert 1")
+                                debug { "normal revert 1" }
                                 if (pos.y - to.y <= 3) {
                                     e.to = cheatData.lastGroundPos
                                     //System.out.println("revert normal 1");
@@ -272,7 +292,7 @@ class PlayerListener(private val plugin: GTAnticheat) : Listener {
                                 p.adventureSettings.update()
                                 p.motion = p.temporalVector.setComponents(0.0, -500.0, 0.0)
                             } else {
-                                if (GTAnticheat.DEBUG) println("revert normal 2")
+                                debug { "revert normal 2" }
                                 //System.out.println("water check: "+waterDistance + "    " + waterY);
                                 //System.out.println("checks:"+check2+", "+(check3 && check4)+", "+check5+", "+check6);
 
@@ -418,9 +438,10 @@ class PlayerListener(private val plugin: GTAnticheat) : Listener {
             data.antiCheatData.lastTeleport = time
             data.antiCheatData.isTeleport = true
             data.fakePlayer.update(e.to)
-            data.antiCheatData.teleportPosition = e.to.clone()
+            data.antiCheatData.teleportPosition = e.to
             data.antiCheatData.lastGroundPos = e.to
             data.antiCheatData.lastOnGround = time
+            debug { "set ground pos (teleport event)" }
         }
 
     }

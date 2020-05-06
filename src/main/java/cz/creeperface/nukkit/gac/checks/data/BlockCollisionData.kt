@@ -19,6 +19,8 @@ class BlockCollisionData(v: Vector3) {
 
     var onClimbable = false
 
+    var lastIcePos = Vector3()
+
     init {
         lastFloorPos.setComponents(v.floorX, v.floorY, v.floorZ)
         lastFreePos.setComponents(v.floorX.toDouble(), v.floorY.toDouble(), v.floorZ.toDouble())
