@@ -9,6 +9,7 @@ import cn.nukkit.level.Level
 import cn.nukkit.plugin.PluginBase
 import cn.nukkit.utils.Config
 import cn.nukkit.utils.PluginException
+import cn.nukkit.utils.TextFormat
 import cz.creeperface.nukkit.gac.listener.PlayerListener
 import cz.creeperface.nukkit.gac.listener.SynapseListener
 import cz.creeperface.nukkit.gac.punishment.DefaultPunishmentManager
@@ -54,6 +55,7 @@ class GTAnticheat : PluginBase(), Listener {
         registerEvent(this, this, LevelUnloadEvent::class.java, { onLevelUnload(it) })
 
         this.server.levels.values.forEach { level -> onLevelLoad(level) }
+        logo()
     }
 
     fun onJump(p: Player, data: ACData) {
@@ -219,6 +221,18 @@ class GTAnticheat : PluginBase(), Listener {
             fly.set(this.server, false)
             logger.warning("Disabling server flight option because of GAC fly check enabled")
         }
+    }
+
+    private fun logo() {
+        logger.info(" ")
+        logger.info("${TextFormat.YELLOW} ██████╗  █████╗  ██████╗")
+        logger.info("${TextFormat.YELLOW}██╔════╝ ██╔══██╗██╔════╝")
+        logger.info("${TextFormat.YELLOW}██║  ███╗███████║██║     ")
+        logger.info("${TextFormat.YELLOW}██║   ██║██╔══██║██║     ")
+        logger.info("${TextFormat.YELLOW}╚██████╔╝██║  ██║╚██████╗")
+        logger.info("${TextFormat.YELLOW} ╚═════╝ ╚═╝  ╚═╝ ╚═════╝")
+        logger.info(" ")
+        logger.info("${TextFormat.YELLOW}       GAC enabled       ")
     }
 
     companion object {
