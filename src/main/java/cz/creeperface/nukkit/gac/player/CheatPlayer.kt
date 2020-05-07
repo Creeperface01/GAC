@@ -116,10 +116,8 @@ class CheatPlayer(val p: Player, cheatPlayer: ICheatPlayer) : ICheatPlayer by (c
 
                     this.setRotation(packet.yaw.toDouble(), packet.pitch.toDouble())
                     forceMovement = null
-                    val packetEntry = packetsData[MovePlayerPacket.NETWORK_ID]!!
-
-                    if (!processPacketCheck(packetEntry)) {
-                        //return;
+                    val packetEntry = packetsData[MovePlayerPacket.NETWORK_ID]?.let {
+                        processPacketCheck(it)
                     }
 
                     val distanceSquared = newPos.distanceSquared(this)
@@ -153,13 +151,8 @@ class CheatPlayer(val p: Player, cheatPlayer: ICheatPlayer) : ICheatPlayer by (c
                         newPosition = null
 
                         val diffX = this.getX() - newPos.x
-                        var diffY = this.getY() - newPos.y
+                        val diffY = this.getY() - newPos.y
                         val diffZ = this.getZ() - newPos.z
-
-                        val yS = 0.5 + ySize
-                        if (diffY >= -yS || diffY <= yS) {
-                            diffY = 0.0
-                        }
 
                         if (diffX != 0.0 || diffY != 0.0 || diffZ != 0.0) {
                             this.x = newPos.x

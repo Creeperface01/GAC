@@ -78,7 +78,6 @@ class PlayerListener(private val plugin: GTAnticheat) : Listener {
         }
 
         if (p.gamemode > 0 || to.x == from.x && to.y == from.y && to.z == from.z || p.adventureSettings.get(AdventureSettings.Type.FLYING) || p.riding != null || p.isGliding) {
-            debug { "allowed fly" }
             return
         }
 
