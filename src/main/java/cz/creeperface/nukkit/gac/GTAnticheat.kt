@@ -56,13 +56,15 @@ class GTAnticheat : PluginBase(), Listener {
 
         this.server.levels.values.forEach { level -> onLevelLoad(level) }
         logo()
+
+        Messages.translate("kick_player", "fly", "test")
     }
 
     fun onJump(p: Player, data: ACData) {
         val cheatData = data.antiCheatData
 
         val time = System.currentTimeMillis()
-        //System.out.println("jump");
+        debug { "jump" }
 
         cheatData.lastJumpPos = p.location.clone()
         cheatData.lastJump = time
@@ -242,6 +244,8 @@ class GTAnticheat : PluginBase(), Listener {
             private set
 
         val DEBUG = false
+
+        val DEBUG_CREATIVE = false
 
         lateinit var conf: Configuration
             private set

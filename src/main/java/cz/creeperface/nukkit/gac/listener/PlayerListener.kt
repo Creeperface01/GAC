@@ -26,6 +26,7 @@ import cz.creeperface.nukkit.gac.checks.data.SpeedData
 import cz.creeperface.nukkit.gac.player.ICheatPlayer
 import cz.creeperface.nukkit.gac.player.NukkitCheatPlayer
 import cz.creeperface.nukkit.gac.utils.*
+import kotlin.math.*
 
 /**
  * @author CreeperFace
@@ -71,13 +72,13 @@ class PlayerListener(private val plugin: GTAnticheat) : Listener {
             cheatData.lastOnGround = System.currentTimeMillis()
             cheatData.lastGroundPos = p.currentPos
             cheatData.isOnGround = true
-            debug { "set ground pos (riding)" }
+//            debug { "set ground pos (riding)" }
 
             cheatData.horizontalFlightPoints = 0
             cheatData.flyPoints = 0
         }
 
-        if (p.gamemode > 0 || to.x == from.x && to.y == from.y && to.z == from.z || p.adventureSettings.get(AdventureSettings.Type.FLYING) || p.riding != null || p.isGliding) {
+        if (!p.checkGamemode() || to.x == from.x && to.y == from.y && to.z == from.z || p.adventureSettings.get(AdventureSettings.Type.FLYING) || p.riding != null || p.isGliding) {
             return
         }
 
@@ -103,7 +104,7 @@ class PlayerListener(private val plugin: GTAnticheat) : Listener {
             BlockCollisionCheck.run(e, acData, time, false)
             cheatData.lastPos = to
             cheatData.lastGroundPos = to
-            debug { "set ground pos (teleport)" }
+//            debug { "set ground pos (teleport)" }
             return
         }
 
@@ -152,29 +153,12 @@ class PlayerListener(private val plugin: GTAnticheat) : Listener {
 
         cheatData.isLastPacketOnGround = p.onGround
 
-        //System.out.println("ground3 "+p.onGround);
-        if (revert || p.onGround || p.riding != null || p.adventureSettings.get(AdventureSettings.Type.FLYING) || !NoCheatTask.isInAir(p, acData.antiCheatData)) {
+        if (revert || p.onGround || acData.collisionData.onClimbable || p.riding != null || p.adventureSettings.get(AdventureSettings.Type.FLYING) || !NoCheatTask.isInAir(p, acData.antiCheatData)) {
             if (p.onGround) {
                 cheatData.lastOnGround = time
                 cheatData.lastGroundPos = pLoc
                 cheatData.isOnGround = true
-                debug { "set ground pos (ground)" }
-            }
-
-            if (GTAnticheat.DEBUG) {
-                if (revert) {
-                    debug { "revert" }
-                }
-
-                if (p.riding != null) {
-                    debug { "riding" }
-                }
-
-                if (p.adventureSettings.get(AdventureSettings.Type.FLYING)) {
-                    debug { "allow flight" }
-                }
-
-                debug { "ground" }
+//                debug { "set ground pos (ground)" }
             }
 
             cheatData.horizontalFlightPoints = 0
@@ -193,9 +177,9 @@ class PlayerListener(private val plugin: GTAnticheat) : Listener {
                 glide = inAirTime > 3000 && time - cheatData.lastJump > 3000 && (from.y - to.y >= expectedMotionY || to.y > expectedY) && to.y - expectedY > 5
             }
 
-            debug { "glide: $glide  moveUp: $moveUp" }
+//            debug { "glide: $glide  moveUp: $moveUp" }
             if (to.y > -20 && ((GTAnticheat.conf.enabled(CheckType.FLY) && moveUp) || glide)) {
-                debug { "check fly" }
+//                debug { "check fly" }
                 if (!acData.motionData.isEmpty && !acData.motionData.ground) {
 
                     val v = Vector2(motionData.fromX, motionData.fromZ)
@@ -239,7 +223,7 @@ class PlayerListener(private val plugin: GTAnticheat) : Listener {
                             cheatData.isOnGround = true
                             cheatData.lastOnGround = time
                             cheatData.lastGroundPos = p.currentPos
-                            debug { "set ground pos (climbable)" }
+//                            debug { "set ground pos (climbable)" }
                         }
                     }
 
@@ -250,7 +234,7 @@ class PlayerListener(private val plugin: GTAnticheat) : Listener {
                     val groundDistance = pos.distance(to)
                     //double groundXZ = Math.sqrt(Math.pow(pos.x - to.x, 2.0D) + Math.pow(pos.z - to.z, 2.0D));
 
-                    val slabDistance = Math.sqrt(Math.pow(cheatData.lastSlab.x - to.x, 2.0) + Math.pow(cheatData.lastSlab.z - to.z, 2.0))
+                    val slabDistance = sqrt((cheatData.lastSlab.x - to.x).pow(2.0) + (cheatData.lastSlab.z - to.z).pow(2.0))
 
                     val slabDistanceY = to.y - cheatData.lastSlab.y
 
@@ -258,21 +242,59 @@ class PlayerListener(private val plugin: GTAnticheat) : Listener {
                     //System.out.println("liquid distance: "+data.getLastLiquid().distance(to));
                     //System.out.println("slab distance: "+slabDistance);
 
-                    val waterDistance = Math.sqrt(Math.pow(cheatData.lastLiquid.x - to.x, 2.0) + Math.pow(cheatData.lastLiquid.z - to.z, 2.0))
-                    val waterY = to.y - cheatData.lastLiquid.y
+                    val waterDistance = sqrt((cheatData.lastLiquid.x - to.x).pow(2.0) + (cheatData.lastLiquid.z - to.z).pow(2.0))
+                    val lastLiquid = cheatData.lastLiquid
+                    lastLiquid.y = ceil(lastLiquid.y)
+                    val waterDiff = to.subtract(lastLiquid)
 
-
-                    if ((slabDistance > 0.4 || slabDistanceY > 0.6 || time - cheatData.lastSlabTime > 500) && groundDistance > 0.6 && (waterDistance > 0.6 || waterY > 0.7)) {
+                    if (
+                            (slabDistance > 0.4 || slabDistanceY > 0.6 || time - cheatData.lastSlabTime > 500)
+                            && groundDistance > 0.6 && (waterDistance > 0.6 || (waterDiff.y > 0 && abs(waterDiff.x) > 0.1 && abs(waterDiff.z) > 0.1) || waterDiff.y > 0.72)
+                    ) {
+//                        debug { "waterDiff: $waterDiff" }
                         //System.out.println("check 1");
                         //System.out.println("ground distance: "+groundDistance);
-                        /*boolean check1 = time - cheatData.getLastHit() > 3000;
-                        boolean check2 = time - cheatData.getLastJump() > 3000;
-                        boolean check3 = jumpDistance > 3.2;
-                        boolean check4 = to.y >= lastJumpPos.y;
-                        boolean check5 = to.y - lastJumpPos.y > 1.45;
-                        boolean check6 = inAirTime > 3000 && cheatData.getLastOnGround() - cheatData.getLastCheck() <= 0;*/
 
-                        if (time - cheatData.lastHit > 2000 && (time - cheatData.lastJump > 3000 ||/* cheatData.lastDownMove > cheatData.getLastJump() ||*/ jumpDistance > 3.2 && to.y >= lastJumpPos.y || to.y - lastJumpPos.y > CheatUtils.calculateJumpHeight(p) * 1.1 || inAirTime > 3000 && cheatData.lastOnGround - cheatData.lastCheck <= 0)) {
+
+                        if (
+                                time - cheatData.lastHit > 2000 && (
+                                        time - cheatData.lastJump > 3000
+                                                || jumpDistance > 3.2 && to.y >= lastJumpPos.y
+                                                || to.y - lastJumpPos.y > CheatUtils.calculateJumpHeight(p) * 1.1
+                                                || inAirTime > 3000 && cheatData.lastOnGround - cheatData.lastCheck <= 0
+                                        )
+                        ) {
+                            if (GTAnticheat.DEBUG) {
+                                val check1 = time - cheatData.lastHit > 3000
+                                val check2 = time - cheatData.lastJump > 3000
+                                val check3 = jumpDistance > 3.2
+                                val check4 = to.y >= lastJumpPos.y
+                                val check5 = to.y - lastJumpPos.y > CheatUtils.calculateJumpHeight(p) * 1.1
+                                val check6 = inAirTime > 3000 && cheatData.lastOnGround - cheatData.lastCheck <= 0
+
+                                if (check1) {
+                                    if (check2) {
+                                        debug { "check2" }
+                                    }
+
+                                    if (check3) {
+                                        debug { "check3" }
+                                    }
+
+                                    if (check4) {
+                                        debug { "check4" }
+                                    }
+
+                                    if (check5) {
+                                        debug { "check5" }
+                                    }
+
+                                    if (check6) {
+                                        debug { "check6" }
+                                    }
+                                }
+                            }
+
                             //System.out.println("check 2");
 
                             if (pos.y >= to.y || glide) {
@@ -292,16 +314,20 @@ class PlayerListener(private val plugin: GTAnticheat) : Listener {
                                 p.motion = p.temporalVector.setComponents(0.0, -500.0, 0.0)
                             } else {
                                 debug { "revert normal 2" }
-                                //System.out.println("water check: "+waterDistance + "    " + waterY);
+                                println("water check: ${waterDiff.x} ${waterDiff.z}    ${waterDiff.y}")
+                                println("liquidY: ${lastLiquid.y}  ${to.y}")
                                 //System.out.println("checks:"+check2+", "+(check3 && check4)+", "+check5+", "+check6);
 
-                                //System.out.println("normal revert 2");
+//                                if ((waterDiff.x == 0.0 || waterDiff.z == 0.0) && waterDiff.y < 0.72) {
+//                                    debug { "waterY: ${waterDiff.y}" }
+//                                } else {
                                 e.to = cheatData.lastGroundPos
                                 p.motion = p.temporalVector.setComponents(0.0, -500.0, 0.0)
                                 cheatData.lastOnGround = time
                                 p.adventureSettings.set(AdventureSettings.Type.ALLOW_FLIGHT, false)
                                 p.adventureSettings.set(AdventureSettings.Type.FLYING, false)
                                 p.adventureSettings.update()
+//                                }
                             }
 
 
@@ -349,7 +375,7 @@ class PlayerListener(private val plugin: GTAnticheat) : Listener {
             val p = entity as Player
             val motion = e.motion
 
-            if (Math.abs(motion.x) < 0.1 && motion.y <= 0 && Math.abs(motion.z) < 0.1) {
+            if (abs(motion.x) < 0.1 && motion.y <= 0 && abs(motion.z) < 0.1) {
                 //System.out.println("motion event: "+e.getMotion());
                 return
             }
@@ -357,7 +383,7 @@ class PlayerListener(private val plugin: GTAnticheat) : Listener {
             val motionData = (entity as ICheatPlayer).acData.motionData
             motionData.clear()
 
-            val ticks = Math.ceil(motion.y / 0.08).toInt()
+            val ticks = ceil(motion.y / 0.08).toInt()
             //double time = ticks * 60 + System.currentTimeMillis();
 
             val maxY = CheatUtils.calculateJumpHeight(p, motion.y) * 1.1
@@ -376,16 +402,16 @@ class PlayerListener(private val plugin: GTAnticheat) : Listener {
             //x = (motionX * timeX) - ((SpeedData.friction * timeX * timeX) / 2);
             //z = (motionZ * timeZ) - ((SpeedData.friction * timeZ * timeZ) / 2);
 
-            val timeX = Math.log(0.98 * 0.2 / Math.abs(motionX)) / Math.log(0.98)
-            val timeZ = Math.log(0.98 * 0.2 / Math.abs(motionZ)) / Math.log(0.98)
+            val timeX = ln(0.98 * 0.2 / abs(motionX)) / ln(0.98)
+            val timeZ = ln(0.98 * 0.2 / abs(motionZ)) / ln(0.98)
 
-            val x = motionX * ((1 - Math.pow(0.98, timeX)) / (1 - 0.98))
-            val z = motionZ * ((1 - Math.pow(0.98, timeZ)) / (1 - 0.98))
+            val x = motionX * ((1 - 0.98.pow(timeX)) / (1 - 0.98))
+            val z = motionZ * ((1 - 0.98.pow(timeZ)) / (1 - 0.98))
 
             //System.out.println("timeX: "+timeX+"  timeZ: "+timeZ+"   dX: "+x+"    dZ: "+z);
 
 
-            val timeXZ = Math.max(timeX, timeZ)
+            val timeXZ = max(timeX, timeZ)
 
             //System.out.println("after: "+System.currentTimeMillis()+"    count: "+count);
 
@@ -440,7 +466,7 @@ class PlayerListener(private val plugin: GTAnticheat) : Listener {
             data.antiCheatData.teleportPosition = e.to
             data.antiCheatData.lastGroundPos = e.to
             data.antiCheatData.lastOnGround = time
-            debug { "set ground pos (teleport event)" }
+//            debug { "set ground pos (teleport event)" }
         }
 
     }
@@ -462,6 +488,7 @@ class PlayerListener(private val plugin: GTAnticheat) : Listener {
     fun onSprint(e: PlayerToggleSprintEvent) {
         val p = e.player
 
+        debug { "sprint" }
         if (p !is ICheatPlayer || !shouldCheck(p, CheckType.SPEED)) {
             return
         }
@@ -552,7 +579,7 @@ class PlayerListener(private val plugin: GTAnticheat) : Listener {
     fun onBlockBreak(e: BlockBreakEvent) {
         val p = e.player
 
-        if (p.gamemode > 0 || p !is ICheatPlayer || !shouldCheck(p)) {
+        if (!p.checkGamemode() || p !is ICheatPlayer || !shouldCheck(p)) {
             return
         }
 
@@ -595,7 +622,7 @@ class PlayerListener(private val plugin: GTAnticheat) : Listener {
             val damager = e.damager
             if (damager is Player) {
 
-                if (damager.gamemode > 0) {
+                if (!damager.checkGamemode()) {
                     return
                 }
                 //aData.fakePlayer.update(attacker.getLocation());

@@ -46,7 +46,7 @@ class SpeedData {
         const val WATER_MODIFIER = 0
 
         //horizontal
-        const val LADDER = 0.118
+        const val LADDER = 0.2
         const val JUMP = 0.55
         const val STAIRS = 0.5
         const val WATER = 0.0

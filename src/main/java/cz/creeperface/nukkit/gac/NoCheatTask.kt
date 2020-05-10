@@ -14,7 +14,7 @@ import cz.creeperface.nukkit.gac.checks.data.AntiCheatData
 import cz.creeperface.nukkit.gac.player.ICheatPlayer
 import cz.creeperface.nukkit.gac.utils.CheckType
 import cz.creeperface.nukkit.gac.utils.Messages
-import cz.creeperface.nukkit.gac.utils.debug
+import cz.creeperface.nukkit.gac.utils.checkGamemode
 import cz.creeperface.nukkit.gac.utils.shouldCheck
 
 class NoCheatTask(
@@ -66,11 +66,11 @@ class NoCheatTask(
 
             val cheatData = acData.antiCheatData
 
-            if (p.gamemode > 0 || p.adventureSettings.get(AdventureSettings.Type.FLYING) || cheatData.lastPos.getLevel().id != p.getLevel().id || cheatData.isTeleport) {
+            if (!p.checkGamemode() || p.adventureSettings.get(AdventureSettings.Type.FLYING) || cheatData.lastPos.getLevel().id != p.getLevel().id || cheatData.isTeleport) {
                 //System.out.println("task check 1");
                 val current = p.clone()
 
-                debug { "Update ground pos (task)" }
+//                debug { "Update ground pos (task)" }
                 cheatData.lastGroundPos = current
                 cheatData.lastOnGround = time
                 cheatData.lastJumpPos = current
@@ -184,14 +184,14 @@ class NoCheatTask(
                     data.lastLiquid = p.clone()
                     data.lastOnGround = System.currentTimeMillis()
                     data.lastGroundPos = p.clone()
-                    debug { "set ground pos (liquid)" }
+//                    debug { "set ground pos (liquid)" }
                     data.isOnGround = true
                     p.highestPosition = p.y
                     return false
                 }
 
                 if (b.id == Item.LADDER || b.id == Item.VINE) {
-                    debug { "set ground pos (climbable)" }
+//                    debug { "set ground pos (climbable)" }
                     data.lastOnGround = System.currentTimeMillis()
                     data.lastGroundPos = p.clone()
                     data.isOnGround = true

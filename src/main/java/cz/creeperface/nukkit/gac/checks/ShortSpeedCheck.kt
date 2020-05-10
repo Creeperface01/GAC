@@ -13,6 +13,8 @@ import cz.creeperface.nukkit.gac.utils.debug
  */
 object ShortSpeedCheck {
 
+    var maxVert = 0.0
+
     fun run(e: PlayerMoveEvent, acData: cz.creeperface.nukkit.gac.ACData): Boolean {
         val p = e.player
 
@@ -94,7 +96,10 @@ object ShortSpeedCheck {
                 val diff = distance - maxDistance
 
                 if (diff > 0.5 || cheatData.speedPoints > 10) {
-                    debug { "horiz: $diff" }
+                    debug { p.isSprinting }
+                    debug { acData.speedData.lastSpeedType }
+                    debug { time - acData.speedData.lastSpeedChange }
+                    debug { "horiz: $diff   current: $distance    max: $maxDistance" }
                     e.to = speedData.lastNonSpeedPos
                     cheatData.speedPoints = 0
                     return false
@@ -121,6 +126,9 @@ object ShortSpeedCheck {
                 }
 
                 val diff = to.y - from.y
+                if (diff > maxVert) {
+                    maxVert = diff
+                }
 
                 if (diff > maxSpeed) {
 

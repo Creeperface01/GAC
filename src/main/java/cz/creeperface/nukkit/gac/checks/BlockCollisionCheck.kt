@@ -3,9 +3,9 @@ package cz.creeperface.nukkit.gac.checks
 //import cn.nukkit.math.SimpleAxisAlignedBB
 import cn.nukkit.block.*
 import cn.nukkit.event.player.PlayerMoveEvent
-import cn.nukkit.item.Item
 import cn.nukkit.level.Level
 import cn.nukkit.math.*
+import cz.creeperface.nukkit.gac.ACData
 import cz.creeperface.nukkit.gac.utils.debug
 import cz.creeperface.nukkit.gac.utils.getBoundingBoxes
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap
@@ -21,7 +21,7 @@ object BlockCollisionCheck {
     internal val collisionCalculators: Int2ObjectOpenHashMap<(AxisAlignedBB, Block) -> Boolean>
 
 
-    fun run(e: PlayerMoveEvent, data: cz.creeperface.nukkit.gac.ACData, time: Long, checkNoClip: Boolean): Boolean {
+    fun run(e: PlayerMoveEvent, data: ACData, time: Long, checkNoClip: Boolean): Boolean {
         val p = e.player
         val from = e.from
         val to = e.to
@@ -49,7 +49,6 @@ object BlockCollisionCheck {
             }
 
             var water = false
-            var climb = false
             var collision = false
 
             val cheatData = data.antiCheatData
@@ -87,10 +86,6 @@ object BlockCollisionCheck {
                 } else {
                     if (block is BlockLiquid) {
                         water = true
-                    } else if (block.id == Item.LADDER || block.id == Item.VINE) {
-                        if (NukkitMath.floorDouble(block.y) == NukkitMath.floorDouble(p.y)) {
-                            climb = true
-                        }
                     }/* else if (from.y <= to.y && block.getFloorY() == p.getFloorY() && (block instanceof BlockStairs || block instanceof BlockSlab)) {
                         cheatData.setLastSlab(p.clone());
                         cheatData.setLastSlabTime(time);
@@ -111,7 +106,13 @@ object BlockCollisionCheck {
             p.blocksAround = blocksAround
             p.collisionBlocks = collidingBlocks
 
-            collisionData.onClimbable = climb
+            val inBlock = to.levelBlock
+            collisionData.onClimbable = inBlock.id == BlockID.VINE || inBlock.id == BlockID.LADDER
+
+            if (collisionData.onClimbable) {
+                data.antiCheatData.lastGroundPos = to
+                data.antiCheatData.lastOnGround = time
+            }
 
             if (water) {
                 cheatData.lastLiquid = to
