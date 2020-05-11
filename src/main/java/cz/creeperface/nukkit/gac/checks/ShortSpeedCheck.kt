@@ -6,7 +6,9 @@ import cn.nukkit.math.Vector2
 import cz.creeperface.nukkit.gac.GTAnticheat
 import cz.creeperface.nukkit.gac.checks.data.SpeedData
 import cz.creeperface.nukkit.gac.utils.CheckType
+import cz.creeperface.nukkit.gac.utils.GACTimings
 import cz.creeperface.nukkit.gac.utils.debug
+import cz.creeperface.nukkit.gac.utils.execute
 
 /**
  * Created by CreeperFace on 19. 11. 2016.
@@ -15,7 +17,7 @@ object ShortSpeedCheck {
 
     var maxVert = 0.0
 
-    fun run(e: PlayerMoveEvent, acData: cz.creeperface.nukkit.gac.ACData): Boolean {
+    fun run(e: PlayerMoveEvent, acData: cz.creeperface.nukkit.gac.ACData): Boolean = GACTimings.speedCheck.execute {
         val p = e.player
 
         val time = System.currentTimeMillis()

@@ -12,10 +12,7 @@ import cn.nukkit.math.Vector3
 import cn.nukkit.scheduler.Task
 import cz.creeperface.nukkit.gac.checks.data.AntiCheatData
 import cz.creeperface.nukkit.gac.player.ICheatPlayer
-import cz.creeperface.nukkit.gac.utils.CheckType
-import cz.creeperface.nukkit.gac.utils.Messages
-import cz.creeperface.nukkit.gac.utils.checkGamemode
-import cz.creeperface.nukkit.gac.utils.shouldCheck
+import cz.creeperface.nukkit.gac.utils.*
 
 class NoCheatTask(
         /*private Vector3 temporalVector = new Vector3();
@@ -23,7 +20,7 @@ class NoCheatTask(
 
         private val plugin: GTAnticheat) : Task() {
 
-    override fun onRun(currentTick: Int) {
+    override fun onRun(currentTick: Int) = GACTimings.cheatTask.execute {
         val time = System.currentTimeMillis()
 
         for (p in Server.getInstance().onlinePlayers.values) {

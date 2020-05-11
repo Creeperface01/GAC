@@ -116,254 +116,256 @@ class PlayerListener(private val plugin: GTAnticheat) : Listener {
             //System.out.println("revert speed");
         }
 
-        val bb = p.getBoundingBox().clone()
+        GACTimings.flyCheck.execute {
+            val bb = p.getBoundingBox().clone()
 
-        val bb2 = bb.clone()
-        bb2.minY = bb2.minY + 0.6
-        bb2.expand(-0.2, 0.0, -0.2)
+            val bb2 = bb.clone()
+            bb2.minY = bb2.minY + 0.6
+            bb2.expand(-0.2, 0.0, -0.2)
 
-        val pLoc = p.currentPos
+            val pLoc = p.currentPos
 
-        val motionData = acData.motionData
-        if (!motionData.isEmpty && !motionData.ground) {
-            //System.out.println("!empty ground check");
-            val timeY = motionData.timeY
+            val motionData = acData.motionData
+            if (!motionData.isEmpty && !motionData.ground) {
+                //System.out.println("!empty ground check");
+                val timeY = motionData.timeY
 
-            if (timeY > time && timeY - time > 1500 || time > timeY) {
-                if (motionData.groundTime == (-1).toLong()) {
-                    if (p.onGround)
-                        motionData.groundTime = time
-                } else if (time - motionData.groundTime > 1500) {
-                    //System.out.println("motion ground");
-                    motionData.ground = true
+                if (timeY > time && timeY - time > 1500 || time > timeY) {
+                    if (motionData.groundTime == (-1).toLong()) {
+                        if (p.onGround)
+                            motionData.groundTime = time
+                    } else if (time - motionData.groundTime > 1500) {
+                        //System.out.println("motion ground");
+                        motionData.ground = true
+                    }
                 }
             }
-        }
 
-        val moveUp = to.y >= from.y
+            val moveUp = to.y >= from.y
 
-        if (!moveUp) {
-            cheatData.lastDownMove = time
-            //System.out.println("down");
-        }
+            if (!moveUp) {
+                cheatData.lastDownMove = time
+                //System.out.println("down");
+            }
 
-        if (cheatData.isLastPacketOnGround) {
-            cheatData.lastOnGround = time
-        }
-
-        cheatData.isLastPacketOnGround = p.onGround
-
-        if (revert || p.onGround || acData.collisionData.onClimbable || p.riding != null || p.adventureSettings.get(AdventureSettings.Type.FLYING) || !NoCheatTask.isInAir(p, acData.antiCheatData)) {
-            if (p.onGround) {
+            if (cheatData.isLastPacketOnGround) {
                 cheatData.lastOnGround = time
-                cheatData.lastGroundPos = pLoc
-                cheatData.isOnGround = true
+            }
+
+            cheatData.isLastPacketOnGround = p.onGround
+
+            if (revert || p.onGround || acData.collisionData.onClimbable || p.riding != null || p.adventureSettings.get(AdventureSettings.Type.FLYING) || !NoCheatTask.isInAir(p, acData.antiCheatData)) {
+                if (p.onGround) {
+                    cheatData.lastOnGround = time
+                    cheatData.lastGroundPos = pLoc
+                    cheatData.isOnGround = true
 //                debug { "set ground pos (ground)" }
-            }
+                }
 
-            cheatData.horizontalFlightPoints = 0
-            cheatData.flyPoints = 0
-        } else {
-            cheatData.isOnGround = false
+                cheatData.horizontalFlightPoints = 0
+                cheatData.flyPoints = 0
+            } else {
+                cheatData.isOnGround = false
 
-            val inAirTime = (time - cheatData.lastOnGround).toInt()
+                val inAirTime = (time - cheatData.lastOnGround).toInt()
 
 
-            var glide = false
+                var glide = false
 
-            if (GTAnticheat.conf.enabled(CheckType.GLIDE) && !moveUp && from.y - to.y < 1 && inAirTime > 2000) {
-                val expectedMotionY = (p.highestPosition - to.y) / ((time - acData.antiCheatData.lastHighestPos) / 50) * 0.06
-                val expectedY = p.highestPosition - to.y - 0.06 * ((time - acData.antiCheatData.lastHighestPos) / 50)
-                glide = inAirTime > 3000 && time - cheatData.lastJump > 3000 && (from.y - to.y >= expectedMotionY || to.y > expectedY) && to.y - expectedY > 5
-            }
+                if (GTAnticheat.conf.enabled(CheckType.GLIDE) && !moveUp && from.y - to.y < 1 && inAirTime > 2000) {
+                    val expectedMotionY = (p.highestPosition - to.y) / ((time - acData.antiCheatData.lastHighestPos) / 50) * 0.06
+                    val expectedY = p.highestPosition - to.y - 0.06 * ((time - acData.antiCheatData.lastHighestPos) / 50)
+                    glide = inAirTime > 3000 && time - cheatData.lastJump > 3000 && (from.y - to.y >= expectedMotionY || to.y > expectedY) && to.y - expectedY > 5
+                }
 
 //            debug { "glide: $glide  moveUp: $moveUp" }
-            if (to.y > -20 && ((GTAnticheat.conf.enabled(CheckType.FLY) && moveUp) || glide)) {
+                if (to.y > -20 && ((GTAnticheat.conf.enabled(CheckType.FLY) && moveUp) || glide)) {
 //                debug { "check fly" }
-                if (!acData.motionData.isEmpty && !acData.motionData.ground) {
+                    if (!acData.motionData.isEmpty && !acData.motionData.ground) {
 
-                    val v = Vector2(motionData.fromX, motionData.fromZ)
-                    val v2 = Vector2(motionData.x, motionData.z)
+                        val v = Vector2(motionData.fromX, motionData.fromZ)
+                        val v2 = Vector2(motionData.x, motionData.z)
 
-                    val pDistance = Vector2(p.x, p.z).distance(v2)
+                        val pDistance = Vector2(p.x, p.z).distance(v2)
 
-                    val expectedTime = motionData.timeY
-                    val expectedY = motionData.y
+                        val expectedTime = motionData.timeY
+                        val expectedY = motionData.y
 
-                    if (motionData.groundTime == (-1).toLong() && (time - expectedTime > 1000 || to.y > expectedY + 1.5 || v.distance(v2) + 2 < pDistance)) {
-                        //System.out.println("from: "+v.toString()+"       pPos: "+p.getPosition().toString());
-                        //System.out.println("revert, currY: "+to.y+"  maxY: "+motionData.get("y")+"  distance: "+v.distance(v2)+"   pDistance: "+pDistance);
-                        e.setCancelled()
-                        debug { "revert motion" }
-                    }
-                } else {
-                    val pos = cheatData.lastGroundPos
+                        if (motionData.groundTime == (-1).toLong() && (time - expectedTime > 1000 || to.y > expectedY + 1.5 || v.distance(v2) + 2 < pDistance)) {
+                            //System.out.println("from: "+v.toString()+"       pPos: "+p.getPosition().toString());
+                            //System.out.println("revert, currY: "+to.y+"  maxY: "+motionData.get("y")+"  distance: "+v.distance(v2)+"   pDistance: "+pDistance);
+                            e.setCancelled()
+                            debug { "revert motion" }
+                        }
+                    } else {
+                        val pos = cheatData.lastGroundPos
 
-                    //System.out.println("Y: "+(to.y - data.getLastGroundPos().y)+"          time: "+(data.getLastOnGround() - data.getLastJump()));
+                        //System.out.println("Y: "+(to.y - data.getLastGroundPos().y)+"          time: "+(data.getLastOnGround() - data.getLastJump()));
 
-                    if (to.y - cheatData.lastGroundPos.y <= 1 && cheatData.lastOnGround > cheatData.lastJump && time - cheatData.lastPacketJump < 1000) {
-                        plugin.onJump(p, acData)
-                        //System.out.println("jump2");
-                    }
+                        if (to.y - cheatData.lastGroundPos.y <= 1 && cheatData.lastOnGround > cheatData.lastJump && time - cheatData.lastPacketJump < 1000) {
+                            plugin.onJump(p, acData)
+                            //System.out.println("jump2");
+                        }
 
-                    val lastJumpPos = cheatData.lastJumpPos
-                    val jumpDistance = lastJumpPos.distance(to)
+                        val lastJumpPos = cheatData.lastJumpPos
+                        val jumpDistance = lastJumpPos.distance(to)
 
 //                    val slab = false
 
-                    for (block in p.getBlocksUnder(null)) {
-                        if ((block is BlockSlab || block is BlockStairs) && block.collidesWith(bb2)) {
-                            cheatData.lastSlab = to
-                            cheatData.lastSlabTime = time
-                            //slab = true;
-                        }
-
-                        if (block.id == Item.LADDER || block.id == Item.VINE) {
-                            //data.collisionData.onClimbable = true;
-                            cheatData.isOnGround = true
-                            cheatData.lastOnGround = time
-                            cheatData.lastGroundPos = p.currentPos
-//                            debug { "set ground pos (climbable)" }
-                        }
-                    }
-
-                    //System.out.println(slab ? "!ground" : "!ground slab");
-
-
-                    //double groundDistance = Math.sqrt(Math.pow(pos.x - to.x, 2.0D) + Math.pow(pos.z - to.z, 2.0D));
-                    val groundDistance = pos.distance(to)
-                    //double groundXZ = Math.sqrt(Math.pow(pos.x - to.x, 2.0D) + Math.pow(pos.z - to.z, 2.0D));
-
-                    val slabDistance = sqrt((cheatData.lastSlab.x - to.x).pow(2.0) + (cheatData.lastSlab.z - to.z).pow(2.0))
-
-                    val slabDistanceY = to.y - cheatData.lastSlab.y
-
-                    //System.out.println("ground distance: "+groundDistance + "           inAirTime: "+inAirTime);
-                    //System.out.println("liquid distance: "+data.getLastLiquid().distance(to));
-                    //System.out.println("slab distance: "+slabDistance);
-
-                    val waterDistance = sqrt((cheatData.lastLiquid.x - to.x).pow(2.0) + (cheatData.lastLiquid.z - to.z).pow(2.0))
-                    val lastLiquid = cheatData.lastLiquid
-                    lastLiquid.y = ceil(lastLiquid.y)
-                    val waterDiff = to.subtract(lastLiquid)
-
-                    if (
-                            (slabDistance > 0.4 || slabDistanceY > 0.6 || time - cheatData.lastSlabTime > 500)
-                            && groundDistance > 0.6 && (waterDistance > 0.6 || (waterDiff.y > 0 && abs(waterDiff.x) > 0.1 && abs(waterDiff.z) > 0.1) || waterDiff.y > 0.72)
-                    ) {
-//                        debug { "waterDiff: $waterDiff" }
-                        //System.out.println("check 1");
-                        //System.out.println("ground distance: "+groundDistance);
-
-
-                        if (
-                                time - cheatData.lastHit > 2000 && (
-                                        time - cheatData.lastJump > 3000
-                                                || jumpDistance > 3.2 && to.y >= lastJumpPos.y
-                                                || to.y - lastJumpPos.y > CheatUtils.calculateJumpHeight(p) * 1.1
-                                                || inAirTime > 3000 && cheatData.lastOnGround - cheatData.lastCheck <= 0
-                                        )
-                        ) {
-                            if (GTAnticheat.DEBUG) {
-                                val check1 = time - cheatData.lastHit > 3000
-                                val check2 = time - cheatData.lastJump > 3000
-                                val check3 = jumpDistance > 3.2
-                                val check4 = to.y >= lastJumpPos.y
-                                val check5 = to.y - lastJumpPos.y > CheatUtils.calculateJumpHeight(p) * 1.1
-                                val check6 = inAirTime > 3000 && cheatData.lastOnGround - cheatData.lastCheck <= 0
-
-                                if (check1) {
-                                    if (check2) {
-                                        debug { "check2" }
-                                    }
-
-                                    if (check3) {
-                                        debug { "check3" }
-                                    }
-
-                                    if (check4) {
-                                        debug { "check4" }
-                                    }
-
-                                    if (check5) {
-                                        debug { "check5" }
-                                    }
-
-                                    if (check6) {
-                                        debug { "check6" }
-                                    }
-                                }
+                        for (block in p.getBlocksUnder(null)) {
+                            if ((block is BlockSlab || block is BlockStairs) && block.collidesWith(bb2)) {
+                                cheatData.lastSlab = to
+                                cheatData.lastSlabTime = time
+                                //slab = true;
                             }
 
-                            //System.out.println("check 2");
+                            if (block.id == Item.LADDER || block.id == Item.VINE) {
+                                //data.collisionData.onClimbable = true;
+                                cheatData.isOnGround = true
+                                cheatData.lastOnGround = time
+                                cheatData.lastGroundPos = p.currentPos
+//                            debug { "set ground pos (climbable)" }
+                            }
+                        }
 
-                            if (pos.y >= to.y || glide) {
+                        //System.out.println(slab ? "!ground" : "!ground slab");
 
-                                debug { "normal revert 1" }
-                                if (pos.y - to.y <= 3) {
-                                    e.to = cheatData.lastGroundPos
-                                    //System.out.println("revert normal 1");
-                                } else {
-                                    acData.antiCheatData.horizontalFlightPoints++
-                                    e.setCancelled()
+
+                        //double groundDistance = Math.sqrt(Math.pow(pos.x - to.x, 2.0D) + Math.pow(pos.z - to.z, 2.0D));
+                        val groundDistance = pos.distance(to)
+                        //double groundXZ = Math.sqrt(Math.pow(pos.x - to.x, 2.0D) + Math.pow(pos.z - to.z, 2.0D));
+
+                        val slabDistance = sqrt((cheatData.lastSlab.x - to.x).pow(2.0) + (cheatData.lastSlab.z - to.z).pow(2.0))
+
+                        val slabDistanceY = to.y - cheatData.lastSlab.y
+
+                        //System.out.println("ground distance: "+groundDistance + "           inAirTime: "+inAirTime);
+                        //System.out.println("liquid distance: "+data.getLastLiquid().distance(to));
+                        //System.out.println("slab distance: "+slabDistance);
+
+                        val waterDistance = sqrt((cheatData.lastLiquid.x - to.x).pow(2.0) + (cheatData.lastLiquid.z - to.z).pow(2.0))
+                        val lastLiquid = cheatData.lastLiquid
+                        lastLiquid.y = ceil(lastLiquid.y)
+                        val waterDiff = to.subtract(lastLiquid)
+
+                        if (
+                                (slabDistance > 0.4 || slabDistanceY > 0.6 || time - cheatData.lastSlabTime > 500)
+                                && groundDistance > 0.6 && (waterDistance > 0.6 || (waterDiff.y > 0 && abs(waterDiff.x) > 0.1 && abs(waterDiff.z) > 0.1) || waterDiff.y > 0.72)
+                        ) {
+//                        debug { "waterDiff: $waterDiff" }
+                            //System.out.println("check 1");
+                            //System.out.println("ground distance: "+groundDistance);
+
+
+                            if (
+                                    time - cheatData.lastHit > 2000 && (
+                                            time - cheatData.lastJump > 3000
+                                                    || jumpDistance > 3.2 && to.y >= lastJumpPos.y
+                                                    || to.y - lastJumpPos.y > CheatUtils.calculateJumpHeight(p) * 1.1
+                                                    || inAirTime > 3000 && cheatData.lastOnGround - cheatData.lastCheck <= 0
+                                            )
+                            ) {
+                                if (GTAnticheat.DEBUG) {
+                                    val check1 = time - cheatData.lastHit > 3000
+                                    val check2 = time - cheatData.lastJump > 3000
+                                    val check3 = jumpDistance > 3.2
+                                    val check4 = to.y >= lastJumpPos.y
+                                    val check5 = to.y - lastJumpPos.y > CheatUtils.calculateJumpHeight(p) * 1.1
+                                    val check6 = inAirTime > 3000 && cheatData.lastOnGround - cheatData.lastCheck <= 0
+
+                                    if (check1) {
+                                        if (check2) {
+                                            debug { "check2" }
+                                        }
+
+                                        if (check3) {
+                                            debug { "check3" }
+                                        }
+
+                                        if (check4) {
+                                            debug { "check4" }
+                                        }
+
+                                        if (check5) {
+                                            debug { "check5" }
+                                        }
+
+                                        if (check6) {
+                                            debug { "check6" }
+                                        }
+                                    }
                                 }
 
-                                p.adventureSettings.set(AdventureSettings.Type.ALLOW_FLIGHT, false)
-                                p.adventureSettings.set(AdventureSettings.Type.FLYING, false)
-                                p.adventureSettings.update()
-                                p.motion = p.temporalVector.setComponents(0.0, -500.0, 0.0)
-                            } else {
-                                debug { "revert normal 2" }
-                                println("water check: ${waterDiff.x} ${waterDiff.z}    ${waterDiff.y}")
-                                println("liquidY: ${lastLiquid.y}  ${to.y}")
-                                //System.out.println("checks:"+check2+", "+(check3 && check4)+", "+check5+", "+check6);
+                                //System.out.println("check 2");
+
+                                if (pos.y >= to.y || glide) {
+
+                                    debug { "normal revert 1" }
+                                    if (pos.y - to.y <= 3) {
+                                        e.to = cheatData.lastGroundPos
+                                        //System.out.println("revert normal 1");
+                                    } else {
+                                        acData.antiCheatData.horizontalFlightPoints++
+                                        e.setCancelled()
+                                    }
+
+                                    p.adventureSettings.set(AdventureSettings.Type.ALLOW_FLIGHT, false)
+                                    p.adventureSettings.set(AdventureSettings.Type.FLYING, false)
+                                    p.adventureSettings.update()
+                                    p.motion = p.temporalVector.setComponents(0.0, -500.0, 0.0)
+                                } else {
+                                    debug { "revert normal 2" }
+                                    println("water check: ${waterDiff.x} ${waterDiff.z}    ${waterDiff.y}")
+                                    println("liquidY: ${lastLiquid.y}  ${to.y}")
+                                    //System.out.println("checks:"+check2+", "+(check3 && check4)+", "+check5+", "+check6);
 
 //                                if ((waterDiff.x == 0.0 || waterDiff.z == 0.0) && waterDiff.y < 0.72) {
 //                                    debug { "waterY: ${waterDiff.y}" }
 //                                } else {
-                                e.to = cheatData.lastGroundPos
-                                p.motion = p.temporalVector.setComponents(0.0, -500.0, 0.0)
-                                cheatData.lastOnGround = time
-                                p.adventureSettings.set(AdventureSettings.Type.ALLOW_FLIGHT, false)
-                                p.adventureSettings.set(AdventureSettings.Type.FLYING, false)
-                                p.adventureSettings.update()
+                                    e.to = cheatData.lastGroundPos
+                                    p.motion = p.temporalVector.setComponents(0.0, -500.0, 0.0)
+                                    cheatData.lastOnGround = time
+                                    p.adventureSettings.set(AdventureSettings.Type.ALLOW_FLIGHT, false)
+                                    p.adventureSettings.set(AdventureSettings.Type.FLYING, false)
+                                    p.adventureSettings.update()
 //                                }
+                                }
+
+
+                                if (acData.antiCheatData.horizontalFlightPoints > 40) {
+                                    p.kick(Messages.translate("kick_player", "fly", p.displayName), false)
+
+                                    plugin.server.broadcastMessage(Messages.translate("kick_broadcast", "fly", p.displayName))
+                                }
+
+                                //}
                             }
-
-
-                            if (acData.antiCheatData.horizontalFlightPoints > 40) {
-                                p.kick(Messages.translate("kick_player", "fly", p.displayName), false)
-
-                                plugin.server.broadcastMessage(Messages.translate("kick_broadcast", "fly", p.displayName))
-                            }
-
-                            //}
                         }
                     }
-                }
-            } else if (!acData.motionData.isEmpty) {
-                if (motionData.time < time && motionData.timeY < time) {
-                    motionData.clear()
-                    acData.speedData.lastNonSpeedPos = to
-                    //System.out.println("clear 1");
+                } else if (!acData.motionData.isEmpty) {
+                    if (motionData.time < time && motionData.timeY < time) {
+                        motionData.clear()
+                        acData.speedData.lastNonSpeedPos = to
+                        //System.out.println("clear 1");
+                    }
                 }
             }
-        }
 
-        if (e.isCancelled) {
-            //data.speedData.wasRevert = true;
-            //data.speedData.lastRevert = time;
-            acData.speedData.lastNonSpeedPos = from
-            //System.out.println("revert");
-        }
+            if (e.isCancelled) {
+                //data.speedData.wasRevert = true;
+                //data.speedData.lastRevert = time;
+                acData.speedData.lastNonSpeedPos = from
+                //System.out.println("revert");
+            }
 
-        if (!e.isCancelled && (p.onGround || to.y > p.highestPosition)) {
-            //p.highestPosition = to.y;
-            acData.antiCheatData.lastHighestPos = time
-        }
+            if (!e.isCancelled && (p.onGround || to.y > p.highestPosition)) {
+                //p.highestPosition = to.y;
+                acData.antiCheatData.lastHighestPos = time
+            }
 
-        plugin.doKickCheck(acData, p)
-        cheatData.lastCheck = time
+            plugin.doKickCheck(acData, p)
+            cheatData.lastCheck = time
+        }
     }
 
     @EventHandler

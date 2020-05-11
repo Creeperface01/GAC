@@ -3,6 +3,7 @@
 package cz.creeperface.nukkit.gac.utils
 
 import cn.nukkit.Player
+import co.aikar.timings.Timing
 import cz.creeperface.nukkit.gac.GTAnticheat
 
 inline fun debug(message: () -> Any?) {
@@ -17,5 +18,15 @@ inline fun Player.checkGamemode(): Boolean {
         true
     } else {
         this.gamemode == 0
+    }
+}
+
+inline fun <T> Timing.execute(action: () -> T): T {
+    this.startTiming()
+
+    try {
+        return action()
+    } finally {
+        this.stopTiming()
     }
 }
