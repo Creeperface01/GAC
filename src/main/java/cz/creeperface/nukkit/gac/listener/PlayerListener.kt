@@ -315,8 +315,6 @@ class PlayerListener(private val plugin: GTAnticheat) : Listener {
                                     p.motion = p.temporalVector.setComponents(0.0, -500.0, 0.0)
                                 } else {
                                     debug { "revert normal 2" }
-                                    println("water check: ${waterDiff.x} ${waterDiff.z}    ${waterDiff.y}")
-                                    println("liquidY: ${lastLiquid.y}  ${to.y}")
                                     //System.out.println("checks:"+check2+", "+(check3 && check4)+", "+check5+", "+check6);
 
 //                                if ((waterDiff.x == 0.0 || waterDiff.z == 0.0) && waterDiff.y < 0.72) {
