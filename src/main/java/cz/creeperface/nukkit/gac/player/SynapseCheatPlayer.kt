@@ -7,11 +7,12 @@ import cn.nukkit.network.SourceInterface
 import cn.nukkit.network.protocol.DataPacket
 import org.itxtech.synapseapi.SynapseEntry
 import org.itxtech.synapseapi.SynapsePlayer
+import java.net.InetSocketAddress
 
 /**
  * Created by CreeperFace on 25.7.2017.
  */
-class SynapseCheatPlayer(interfaz: SourceInterface, entry: SynapseEntry, clientID: Long?, ip: String, port: Int) : SynapsePlayer(interfaz, entry, clientID, ip, port), ICheatPlayer {
+class SynapseCheatPlayer(interfaz: SourceInterface, entry: SynapseEntry, clientID: Long?, socketAddress: InetSocketAddress) : SynapsePlayer(interfaz, entry, clientID, socketAddress), ICheatPlayer {
 
     val cheatPlayer = CheatPlayer(this, this)
 
