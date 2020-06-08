@@ -14,6 +14,10 @@ import cz.creeperface.nukkit.gac.GTAnticheat
 import cz.creeperface.nukkit.gac.utils.CheckType
 import cz.creeperface.nukkit.gac.utils.shouldCheck
 import java.util.*
+import kotlin.math.cos
+import kotlin.math.pow
+import kotlin.math.sin
+import kotlin.math.sqrt
 
 class FakePlayer : Location() {
 
@@ -39,7 +43,7 @@ class FakePlayer : Location() {
 
         this.metadata = EntityMetadata()
                 .putLong(Entity.DATA_FLAGS, (1 shl Entity.DATA_FLAG_SILENT or (1 shl Entity.DATA_FLAG_INVISIBLE)).toLong()/* | (1 << Entity.DATA_FLAG_CAN_SHOW_NAMETAG) | (1 << Entity.DATA_FLAG_ALWAYS_SHOW_NAMETAG)*/)
-                .putString(Entity.DATA_NAMETAG, "safasfasfasfasfa")
+                .putString(Entity.DATA_NAMETAG, randomString())
                 //.putBoolean(Entity.DATA_FLAG_CAN_SHOW_NAMETAG, false)
                 //.putBoolean(Entity.DATA_FLAG_NO_AI, true)
                 .putLong(Entity.DATA_LEAD_HOLDER_EID, -1)
@@ -111,14 +115,18 @@ class FakePlayer : Location() {
         player.dataPacket(pk)
     }
 
-    private fun changeName(): String {
-        val chars = CharArray(random.nextBoundedInt(12) + 1)
+    private fun randomString(): String {
+        val chars = CharArray(random.nextBoundedInt(15) + 1)
 
         for (i in chars.indices) {
-            chars[i] = (random.nextBoundedInt('z'.toInt()) + 1 + '0'.toInt()).toChar()
+            chars[i] = '0' + random.nextBoundedInt('z' - '0')
         }
 
-        val name = "001" + String(chars)
+        return String(chars)
+    }
+
+    private fun changeName(): String {
+        val name = randomString()
 
         metadata.putString(Entity.DATA_NAMETAG, name)
 
@@ -133,14 +141,14 @@ class FakePlayer : Location() {
     private fun getDirectionVector(p: Location): Vector3 {
         val pitch = p.getPitch() * Math.PI / 180.0
         val yaw = (p.getYaw() + 30 + random.nextRange(-10, 10).toDouble() + 90.0) * Math.PI / 180.0
-        val x = Math.sin(pitch) * Math.cos(yaw)
-        val z = Math.sin(pitch) * Math.sin(yaw)
-        val y = Math.cos(pitch)
+        val x = sin(pitch) * cos(yaw)
+        val z = sin(pitch) * sin(yaw)
+        val y = cos(pitch)
         return Vector3(x, y, z).normalize()
     }
 
     private fun distance(x: Double, z: Double): Double {
-        return Math.sqrt(Math.pow(this.x - x, 2.0) + Math.pow(this.z - z, 2.0))
+        return sqrt((this.x - x).pow(2.0) + (this.z - z).pow(2.0))
     }
 
     companion object {

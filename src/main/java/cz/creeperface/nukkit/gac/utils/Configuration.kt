@@ -11,14 +11,15 @@ data class Configuration(
         val checks: Map<Int, Boolean>,
         val spamDelay: Int,
         val hitRange: Double,
-        val enableElytra: Boolean
+        val enableElytra: Boolean,
+        val maxDistance: Double
 ) {
 
     fun enabled(checkType: CheckType) = this.checks[checkType.ordinal] ?: false
 
     companion object {
 
-        const val VERSION = 2
+        const val VERSION = 4
     }
 }
 

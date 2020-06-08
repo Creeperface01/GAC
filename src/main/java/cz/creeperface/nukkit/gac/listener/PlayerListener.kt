@@ -16,6 +16,7 @@ import cn.nukkit.item.enchantment.Enchantment
 import cn.nukkit.math.Vector2
 import cn.nukkit.math.Vector3
 import cn.nukkit.potion.Effect
+import cn.nukkit.utils.MainLogger
 import cz.creeperface.nukkit.gac.GTAnticheat
 import cz.creeperface.nukkit.gac.NoCheatTask
 import cz.creeperface.nukkit.gac.checks.BlockCollisionCheck
@@ -41,16 +42,18 @@ class PlayerListener(private val plugin: GTAnticheat) : Listener {
         registerEvent(this, plugin, PlayerRespawnEvent::class.java, { onRespawn(it) }, true, EventPriority.MONITOR)
         registerEvent(this, plugin, PlayerToggleSprintEvent::class.java, { onSprint(it) }, true, EventPriority.MONITOR)
         registerEvent(this, plugin, PlayerToggleSneakEvent::class.java, { onSneak(it) }, true, EventPriority.MONITOR)
+        registerEvent(this, plugin, PlayerToggleSwimEvent::class.java, { onSwim(it) }, true, EventPriority.MONITOR)
         registerEvent(this, plugin, BlockBreakEvent::class.java, { onBlockBreak(it) }, true, EventPriority.MONITOR)
         registerEvent(this, plugin, EntityDamageEvent::class.java, { onEntityDamage(it) }, true, EventPriority.MONITOR)
         registerEvent(this, plugin, PlayerJoinEvent::class.java, { onJoin(it) }, true, EventPriority.MONITOR)
+        registerEvent(this, plugin, PlayerPreLoginEvent::class.java, { onPreLogin(it) }, true, EventPriority.MONITOR)
         registerEvent(this, plugin, PlayerCreationEvent::class.java, { onPlayerCreate(it) }, true, EventPriority.MONITOR)
         registerEvent(this, plugin, PlayerInvalidMoveEvent::class.java, { it.setCancelled() }, true, EventPriority.HIGHEST)
         registerEvent(this, plugin, PlayerToggleGlideEvent::class.java, { onPlayerGlide(it) }, true, EventPriority.MONITOR)
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
-    fun onMove(e: PlayerMoveEvent) {
+    private fun onMove(e: PlayerMoveEvent) {
         val p = e.player
 
         if (p !is ICheatPlayer || !shouldCheck(p)) {
@@ -369,7 +372,7 @@ class PlayerListener(private val plugin: GTAnticheat) : Listener {
     }
 
     @EventHandler
-    fun onMotion(e: EntityMotionEvent) {
+    private fun onMotion(e: EntityMotionEvent) {
         val entity = e.entity
 
         if (entity is Player && entity is ICheatPlayer && shouldCheck(entity, CheckType.FLY)) {
@@ -436,7 +439,7 @@ class PlayerListener(private val plugin: GTAnticheat) : Listener {
     }
 
     @EventHandler
-    fun onLevelChange(e: EntityLevelChangeEvent) {
+    private fun onLevelChange(e: EntityLevelChangeEvent) {
         val ent = e.entity
 
         if (ent is ICheatPlayer && shouldCheck(ent)) {
@@ -449,7 +452,7 @@ class PlayerListener(private val plugin: GTAnticheat) : Listener {
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
-    fun onTeleport(e: PlayerTeleportEvent) {
+    private fun onTeleport(e: PlayerTeleportEvent) {
         if (!shouldCheck(e.player, CheckType.FLY)) {
             return
         }
@@ -474,7 +477,7 @@ class PlayerListener(private val plugin: GTAnticheat) : Listener {
     }
 
     @EventHandler
-    fun onRespawn(e: PlayerRespawnEvent) {
+    private fun onRespawn(e: PlayerRespawnEvent) {
         if (!shouldCheck(e.player)) {
             return
         }
@@ -487,7 +490,7 @@ class PlayerListener(private val plugin: GTAnticheat) : Listener {
     }
 
     @EventHandler
-    fun onSprint(e: PlayerToggleSprintEvent) {
+    private fun onSprint(e: PlayerToggleSprintEvent) {
         val p = e.player
 
         debug { "sprint" }
@@ -508,7 +511,7 @@ class PlayerListener(private val plugin: GTAnticheat) : Listener {
     }
 
     @EventHandler
-    fun onSneak(e: PlayerToggleSneakEvent) {
+    private fun onSneak(e: PlayerToggleSneakEvent) {
         val p = e.player
 
         if (p !is ICheatPlayer || shouldCheck(p, CheckType.SPEED)) {
@@ -527,7 +530,8 @@ class PlayerListener(private val plugin: GTAnticheat) : Listener {
         }
     }
 
-    fun onSwim(e: PlayerToggleSwimEvent) {
+    @EventHandler
+    private fun onSwim(e: PlayerToggleSwimEvent) {
         val p = e.player
 
         if (p !is ICheatPlayer || !shouldCheck(p, CheckType.SPEED)) {
@@ -578,7 +582,7 @@ class PlayerListener(private val plugin: GTAnticheat) : Listener {
     }
 
     @EventHandler(ignoreCancelled = true)
-    fun onBlockBreak(e: BlockBreakEvent) {
+    private fun onBlockBreak(e: BlockBreakEvent) {
         val p = e.player
 
         if (!p.checkGamemode() || p !is ICheatPlayer || !shouldCheck(p)) {
@@ -614,7 +618,7 @@ class PlayerListener(private val plugin: GTAnticheat) : Listener {
     }
 
     @EventHandler(ignoreCancelled = true)
-    fun onEntityDamage(e: EntityDamageEvent) {
+    private fun onEntityDamage(e: EntityDamageEvent) {
         val entity = e.entity
 
         if (!shouldCheck(entity))
@@ -637,8 +641,17 @@ class PlayerListener(private val plugin: GTAnticheat) : Listener {
         }
     }
 
+    private fun onPreLogin(e: PlayerPreLoginEvent) {
+        val p = e.player
+        val data = p.skin.skinData.data
+
+        val count = data.count { it.toInt() == 0 }
+
+        MainLogger.getLogger().info("count: ${data.size} transparent: $count")
+    }
+
     @EventHandler(priority = EventPriority.LOWEST)
-    fun onJoin(e: PlayerJoinEvent) {
+    private fun onJoin(e: PlayerJoinEvent) {
         val p = e.player
 
         if (p !is ICheatPlayer) {
@@ -649,12 +662,12 @@ class PlayerListener(private val plugin: GTAnticheat) : Listener {
     }
 
     @EventHandler
-    fun onPlayerCreate(e: PlayerCreationEvent) {
+    private fun onPlayerCreate(e: PlayerCreationEvent) {
         e.playerClass = NukkitCheatPlayer::class.java
     }
 
     @EventHandler
-    fun onPlayerGlide(e: PlayerToggleGlideEvent) {
+    private fun onPlayerGlide(e: PlayerToggleGlideEvent) {
         val p = e.player
 
         if (p !is ICheatPlayer) {

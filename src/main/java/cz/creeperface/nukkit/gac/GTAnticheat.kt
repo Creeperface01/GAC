@@ -18,6 +18,7 @@ import cz.creeperface.nukkit.gac.utils.*
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet
 import java.io.File
 import java.util.*
+import kotlin.math.pow
 
 /**
  * Created by CreeperFace on 10.6.2017.
@@ -196,6 +197,7 @@ class GTAnticheat : PluginBase(), Listener {
         val kick = cfg.getBoolean("kick_players")
         val checkOps = cfg.getBoolean("check_ops")
         val enableElytra = cfg.getBoolean("enable_elytra", false)
+        val maxDistance = cfg.getDouble("max_movement_distance", 10.0).pow(2)
 
         val settings = cfg.getSection("settings")
         val spamDelay = settings.getInt("spam_delay")
@@ -215,7 +217,17 @@ class GTAnticheat : PluginBase(), Listener {
         map[CheckType.TELEPORT.ordinal] = checks.getBoolean("teleport")
         map[CheckType.AIMBOT.ordinal] = checks.getBoolean("aimbot")
 
-        conf = Configuration(default, excluded, kick, checkOps, map, spamDelay, hitRange, enableElytra)
+        conf = Configuration(
+                default,
+                excluded,
+                kick,
+                checkOps,
+                map,
+                spamDelay,
+                hitRange,
+                enableElytra,
+                maxDistance
+        )
 
         if (conf.enabled(CheckType.FLY) && server.allowFlight) {
             val fly = Server::class.java.getDeclaredField("getAllowFlight")

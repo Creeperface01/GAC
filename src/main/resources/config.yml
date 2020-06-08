@@ -1,5 +1,5 @@
 #GAC configuration file
-version: 2 #do not modify this
+version: 4 #do not modify this
 
 #whether GAC will be active in all levels (if not changed below) or not
 default_active: true
@@ -35,3 +35,10 @@ settings:
 #Which means player could use elytra to abuse anticheat
 #This option disables the elytra so players aren't able to use it
 enable_elytra: false
+
+#max percentage of transparent pixels that player's skin can contain
+#Players with higher percentage will be kicked
+max_skin_transparency: 0.5
+
+#Max distance travelled in a single movement (in blocks)
+max_movement_distance: 10
