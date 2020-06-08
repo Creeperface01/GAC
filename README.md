@@ -10,3 +10,12 @@ Compiling
 run command
 ``mvn package``
 from the project directory
+
+TODO list
+--------------
+- [ ] cobweb support
+- [ ] elytra support
+- [ ] bhop detection
+- [ ] better glide detection
+- [ ] blink detection
+- [ ] improve/rework jump handling
