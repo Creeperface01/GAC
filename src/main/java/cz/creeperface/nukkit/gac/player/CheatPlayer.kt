@@ -13,7 +13,6 @@ import cn.nukkit.math.NukkitMath
 import cn.nukkit.math.Vector2
 import cn.nukkit.math.Vector3
 import cn.nukkit.network.protocol.*
-import cn.nukkit.utils.MainLogger
 import co.aikar.timings.Timings
 import cz.creeperface.nukkit.gac.ACData
 import cz.creeperface.nukkit.gac.GTAnticheat
@@ -149,7 +148,6 @@ class CheatPlayer(val p: Player, cheatPlayer: ICheatPlayer) : ICheatPlayer by (c
                         val dz = newPos.z - this.getZ()
 
                         newPosition = Vector3()
-                        MainLogger.getLogger().info("$this  $newPos")
                         fastMove(dx, dy, dz)
                         if (newPosition == null) {
                             return  //maybe solve that in better way
