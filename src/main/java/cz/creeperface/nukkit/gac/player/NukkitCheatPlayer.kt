@@ -83,4 +83,6 @@ class NukkitCheatPlayer(interfaz: SourceInterface, clientID: Long?, ip: String, 
     override fun checkGroundState(large: Boolean) = this.cheatPlayer.checkGroundState(large)
 
     override fun getBlocksUnder(boundingBox: AxisAlignedBB?) = this.cheatPlayer.getBlocksUnder(boundingBox)
+
+    override fun jump() = this.cheatPlayer.jump()
 }

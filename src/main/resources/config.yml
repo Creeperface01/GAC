@@ -1,5 +1,5 @@
 #GAC configuration file
-version: 4 #do not modify this
+version: 5 #do not modify this
 
 #whether GAC will be active in all levels (if not changed below) or not
 default_active: true
@@ -26,6 +26,7 @@ checks:
   spam: true
   reach: true
   aimbot: true
+  bhop: true
 
 settings:
   spam_delay: 8 #delay between messages #currently not implemented

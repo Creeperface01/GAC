@@ -45,4 +45,5 @@ interface ICheatPlayer : IPlayer {
 
     fun checkGroundState(large: Boolean)
 
+    fun jump()
 }

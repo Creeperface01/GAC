@@ -61,20 +61,10 @@ class GTAnticheat : PluginBase(), Listener {
         Messages.translate("kick_player", "fly", "test")
     }
 
-    fun onJump(p: Player, data: ACData) {
-        val cheatData = data.antiCheatData
 
-        val time = System.currentTimeMillis()
-        debug { "jump" }
-
-        cheatData.lastJumpPos = p.location.clone()
-        cheatData.lastJump = time
-        //cheatData.setLastGroundPos(p.getLocation().clone());
-        //cheatData.setLastOnGround(time);
-    }
 
     fun doKickCheck(data: ACData, p: Player) {
-        if (!GTAnticheat.conf.kick) {
+        if (!conf.kick) {
             return
         }
 
@@ -216,6 +206,7 @@ class GTAnticheat : PluginBase(), Listener {
         map[CheckType.SPEEDMINE.ordinal] = checks.getBoolean("speedmine")
         map[CheckType.TELEPORT.ordinal] = checks.getBoolean("teleport")
         map[CheckType.AIMBOT.ordinal] = checks.getBoolean("aimbot")
+        map[CheckType.BHOP.ordinal] = checks.getBoolean("bhop")
 
         conf = Configuration(
                 default,

@@ -21,8 +21,7 @@ class AntiCheatData {
     var isLastPacketOnGround = true
 
 
-    var isJumping = false
-
+    var sinceJump = Int.MAX_VALUE
 
     var lastJump: Long = 0
 
@@ -88,6 +87,7 @@ class AntiCheatData {
     var flyPoints = 0
     var glidePoints = 0
     var speedPoints = 0
+    var bhopPoints = 0
     var speedminePoints = 0
     var inAirPoints = 0
     var killAuraPoints = 0

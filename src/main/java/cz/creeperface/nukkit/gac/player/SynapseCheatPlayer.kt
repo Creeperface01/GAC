@@ -85,4 +85,5 @@ class SynapseCheatPlayer(interfaz: SourceInterface, entry: SynapseEntry, clientI
 
     override fun getBlocksUnder(boundingBox: AxisAlignedBB?) = this.cheatPlayer.getBlocksUnder(boundingBox)
 
+    override fun jump() = this.cheatPlayer.jump()
 }

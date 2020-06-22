@@ -3,6 +3,7 @@ package cz.creeperface.nukkit.gac.utils
 import cn.nukkit.block.BlockStairs
 import cn.nukkit.math.AxisAlignedBB
 import cn.nukkit.math.BlockFace
+import cn.nukkit.math.NukkitMath
 import cn.nukkit.math.SimpleAxisAlignedBB
 
 /**
@@ -237,4 +238,21 @@ private object Stairs {
      * B: .x T: ..
      */
     val AABB_OCT_BOT_SE = SimpleAxisAlignedBB(0.5, 0.0, 0.5, 1.0, 0.5, 1.0)
+}
+
+inline fun AxisAlignedBB.forEachBlocks(action: (Int, Int, Int) -> Unit) {
+    val minX = NukkitMath.floorDouble(this.minX)
+    val minY = NukkitMath.floorDouble(this.minY)
+    val minZ = NukkitMath.floorDouble(this.minZ)
+    val maxX = NukkitMath.ceilDouble(this.maxX)
+    val maxY = NukkitMath.ceilDouble(this.maxY)
+    val maxZ = NukkitMath.ceilDouble(this.maxZ)
+
+    for (z in minZ..maxZ) {
+        for (x in minX..maxX) {
+            for (y in minY..maxY) {
+                action(x, y, z)
+            }
+        }
+    }
 }

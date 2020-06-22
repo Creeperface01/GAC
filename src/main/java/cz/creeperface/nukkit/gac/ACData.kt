@@ -24,12 +24,14 @@ class ACData(val player: Player) {
     val killAuraData = KillAuraData()
 
     init {
+        val pos = player.clone()
 
-        antiCheatData.lastPos = player
-        antiCheatData.lastGroundPos = player
-        antiCheatData.lastJumpPos = player
-        this.speedData.lastNonSpeedPos = player
-        this.collisionData = BlockCollisionData(player)
+        antiCheatData.lastPos = pos
+        antiCheatData.lastGroundPos = pos
+        antiCheatData.lastJumpPos = pos
+        this.speedData.lastNonSpeedPos = pos
+        this.speedData.lastNonBhopPos = pos
+        this.collisionData = BlockCollisionData(pos)
 
         when {
             player.isSneaking -> speedData.lastSpeedType = SpeedData.SpeedType.SNEAK

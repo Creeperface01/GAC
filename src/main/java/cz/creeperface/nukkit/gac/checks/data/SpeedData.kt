@@ -1,6 +1,7 @@
 package cz.creeperface.nukkit.gac.checks.data
 
 import cn.nukkit.level.Location
+import cn.nukkit.math.Vector3
 
 /**
  * Created by CreeperFace on 1. 12. 2016.
@@ -11,6 +12,7 @@ class SpeedData {
     var wasRevert = false
 
     lateinit var lastNonSpeedPos: Location
+    lateinit var lastNonBhopPos: Location
 
     var lastSpeedType = SpeedType.WALK
     var currentSpeedType = SpeedType.WALK
@@ -21,6 +23,8 @@ class SpeedData {
 
     var successCount = 0
     var smoothRevertCount = 0
+
+    var lastMotion = Vector3()
 
     enum class SpeedType(val speed: Double) {
         SNEAK(0.19600677490234375),

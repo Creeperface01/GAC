@@ -3,7 +3,8 @@
 package cz.creeperface.nukkit.gac.utils
 
 import cn.nukkit.Player
-import co.aikar.timings.Timing
+import cn.nukkit.math.Vector2
+import cn.nukkit.math.Vector3
 import cz.creeperface.nukkit.gac.GTAnticheat
 
 inline fun debug(message: () -> Any?) {
@@ -21,12 +22,4 @@ inline fun Player.checkGamemode(): Boolean {
     }
 }
 
-inline fun <T> Timing.execute(action: () -> T): T {
-    this.startTiming()
-
-    try {
-        return action()
-    } finally {
-        this.stopTiming()
-    }
-}
+fun Vector3.toVec2() = Vector2(x, z)

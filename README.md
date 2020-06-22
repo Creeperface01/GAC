@@ -19,3 +19,7 @@ TODO list
 - [ ] better glide detection
 - [ ] blink detection
 - [ ] improve/rework jump handling
+- [ ] jump boost effect
+- [ ] levitation effect
+- [ ] fast eat
+- [ ] creative fly

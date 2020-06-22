@@ -20,7 +20,7 @@ class NoCheatTask(
 
         private val plugin: GTAnticheat) : Task() {
 
-    override fun onRun(currentTick: Int) = GACTimings.cheatTask.execute {
+    override fun onRun(currentTick: Int) = GACTimings.cheatTask.use {
         val time = System.currentTimeMillis()
 
         for (p in Server.getInstance().onlinePlayers.values) {
@@ -74,6 +74,7 @@ class NoCheatTask(
                 cheatData.lastJump = time
                 cheatData.motionData.clear()
                 acData.speedData.lastNonSpeedPos = current
+                acData.speedData.lastNonBhopPos = current
                 points = -1
 
 
@@ -126,7 +127,7 @@ class NoCheatTask(
                     //}
 
                     if (cheatData.speedPoints > 0) {
-                        cheatData.speedPoints = Math.max(0, cheatData.speedPoints - 2)
+                        cheatData.speedPoints = 0.coerceAtLeast(cheatData.speedPoints - 2)
                     }
                 } else {
                     //System.out.println("motion data");
@@ -135,6 +136,7 @@ class NoCheatTask(
                     if ((p.isOnGround || cheatData.isOnGround) && time > timeY && time > motionData.time || motionData.groundTime != (-1).toLong() && time - motionData.groundTime > 1500) {
                         acData.motionData.clear()
                         acData.speedData.lastNonSpeedPos = p.clone()
+                        acData.speedData.lastNonBhopPos = acData.speedData.lastNonSpeedPos
                     } else if (!p.isOnGround && !cheatData.isOnGround && time - timeY > 3000 && time > motionData.time) {
                         p.motion = p.temporalVector.setComponents(0.0, -500.0, 0.0)
                     }

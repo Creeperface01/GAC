@@ -4,11 +4,13 @@ package cz.creeperface.nukkit.gac.checks
 import cn.nukkit.block.*
 import cn.nukkit.event.player.PlayerMoveEvent
 import cn.nukkit.level.Level
-import cn.nukkit.math.*
+import cn.nukkit.math.AxisAlignedBB
+import cn.nukkit.math.BlockFace
+import cn.nukkit.math.SimpleAxisAlignedBB
+import cn.nukkit.math.Vector3
 import cz.creeperface.nukkit.gac.ACData
 import cz.creeperface.nukkit.gac.utils.GACTimings
 import cz.creeperface.nukkit.gac.utils.debug
-import cz.creeperface.nukkit.gac.utils.execute
 import cz.creeperface.nukkit.gac.utils.getBoundingBoxes
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap
 import java.util.*
@@ -23,7 +25,7 @@ object BlockCollisionCheck {
     internal val collisionCalculators: Int2ObjectOpenHashMap<(AxisAlignedBB, Block) -> Boolean>
 
 
-    fun run(e: PlayerMoveEvent, data: ACData, time: Long, checkNoClip: Boolean): Boolean = GACTimings.collisionCheck.execute {
+    fun run(e: PlayerMoveEvent, data: ACData, time: Long, checkNoClip: Boolean): Boolean = GACTimings.collisionCheck.use {
         val p = e.player
         val from = e.from
         val to = e.to
@@ -75,6 +77,7 @@ object BlockCollisionCheck {
                             //MainLogger.getLogger().info("BLOCK: "+block.getName());
                             //revert = !checkSlab || slabDistance > 1;
                             revert = true
+                            debug { "blockBB: ${block.boundingBox.maxY}" }
                             //System.out.println("blocks: " + block.getName() + "    " + block.getId());
                             //System.out.println("PY: "+p.y+"      Y: "+bb2.minY);
 
@@ -97,6 +100,7 @@ object BlockCollisionCheck {
 
             if (revert) {
                 e.to = collisionData.lastFreePos
+//                debug { "bbY: ${newBB.minY}  y: ${to.y}" }
                 debug { "collision revert" }
                 return false
             }
@@ -135,20 +139,9 @@ object BlockCollisionCheck {
         val blocksAround = ArrayList<Block>()
         val vector3 = Vector3()
 
-        val minX = NukkitMath.floorDouble(bb.minX)
-        val minY = NukkitMath.floorDouble(bb.minY)
-        val minZ = NukkitMath.floorDouble(bb.minZ)
-        val maxX = NukkitMath.ceilDouble(bb.maxX)
-        val maxY = NukkitMath.ceilDouble(bb.maxY)
-        val maxZ = NukkitMath.ceilDouble(bb.maxZ)
-
-        for (z in minZ..maxZ) {
-            for (x in minX..maxX) {
-                for (y in minY..maxY) {
-                    val block = level.getBlock(vector3.setComponents(x.toDouble(), y.toDouble(), z.toDouble()))
-                    blocksAround.add(block)
-                }
-            }
+        bb.forEach { x, y, z ->
+            val block = level.getBlock(vector3.setComponents(x.toDouble(), y.toDouble(), z.toDouble()))
+            blocksAround.add(block)
         }
 
         return blocksAround

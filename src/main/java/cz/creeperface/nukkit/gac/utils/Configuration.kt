@@ -33,5 +33,6 @@ enum class CheckType {
     NOCLIP,
     SPAM,
     REACH,
-    AIMBOT
+    AIMBOT,
+    BHOP
 }

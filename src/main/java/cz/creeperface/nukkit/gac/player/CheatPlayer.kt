@@ -9,7 +9,6 @@ import cn.nukkit.event.player.PlayerMoveEvent
 import cn.nukkit.event.server.DataPacketReceiveEvent
 import cn.nukkit.level.Location
 import cn.nukkit.math.AxisAlignedBB
-import cn.nukkit.math.NukkitMath
 import cn.nukkit.math.Vector2
 import cn.nukkit.math.Vector3
 import cn.nukkit.network.protocol.*
@@ -18,6 +17,7 @@ import cz.creeperface.nukkit.gac.ACData
 import cz.creeperface.nukkit.gac.GTAnticheat
 import cz.creeperface.nukkit.gac.checks.PacketCountCheck
 import cz.creeperface.nukkit.gac.checks.collidesWith
+import cz.creeperface.nukkit.gac.utils.debug
 import kotlin.collections.set
 import kotlin.math.ln
 
@@ -53,7 +53,7 @@ class CheatPlayer(val p: Player, cheatPlayer: ICheatPlayer) : ICheatPlayer by (c
                     acData.antiCheatData.lastPacketJump = time
 
                     if (acData.antiCheatData.lastGroundPos.distance(this) < 0.4) {
-                        GTAnticheat.instance.onJump(this, acData)
+                        jump()
                     }
 
                     val motionData = acData.motionData
@@ -73,21 +73,18 @@ class CheatPlayer(val p: Player, cheatPlayer: ICheatPlayer) : ICheatPlayer by (c
 
     fun handleMovePacket(packet: MovePlayerPacket) {
         with(this.p) {
-
             if (!isConnected) {
                 return
             }
 
-            Timings.getReceiveDataPacketTiming(packet).use { timing ->
+            Timings.getReceiveDataPacketTiming(packet).use {
                 val ev = DataPacketReceiveEvent(this, packet)
                 this.server.pluginManager.callEvent(ev)
                 if (ev.isCancelled) {
-                    timing.stopTiming()
                     return
                 }
 
                 if (teleportPosition != null) {
-                    timing.stopTiming()
                     return
                 }
 
@@ -95,7 +92,6 @@ class CheatPlayer(val p: Player, cheatPlayer: ICheatPlayer) : ICheatPlayer by (c
                 var revert = false
 
                 if (newPos.distanceSquared(this) < 0.0001 && (packet.yaw % 360).toDouble() == this.yaw && (packet.pitch % 360).toDouble() == this.pitch) {
-                    timing.stopTiming()
                     return
                 }
 
@@ -198,6 +194,7 @@ class CheatPlayer(val p: Player, cheatPlayer: ICheatPlayer) : ICheatPlayer by (c
                             this.server.pluginManager.callEvent(moveEvent)
 
                             revert = moveEvent.isCancelled
+
                             if (!revert) {
                                 if (to != moveEvent.to) {
                                     this.teleport(moveEvent.to, null)
@@ -205,7 +202,8 @@ class CheatPlayer(val p: Player, cheatPlayer: ICheatPlayer) : ICheatPlayer by (c
                                     this.addMovement(this.getX(), this.getY(), this.getZ(), this.getYaw(), this.getPitch(), this.getYaw())
                                 }
 
-                                updateFallState(this.isOnGround())
+//                                debug { "newPos: ${this.position}" }
+                                updateFallState(this.isOnGround)
                                 if (this.isOnGround || this.getY() > this.highestPosition) {
                                     this.highestPosition = this.getY()
                                 }
@@ -328,19 +326,8 @@ class CheatPlayer(val p: Player, cheatPlayer: ICheatPlayer) : ICheatPlayer by (c
                     bb.minY -= 0.4
                 }
 
-                val minX = NukkitMath.floorDouble(bb.minX)
-                val minY = NukkitMath.floorDouble(bb.minY)
-                val minZ = NukkitMath.floorDouble(bb.minZ)
-                val maxX = NukkitMath.ceilDouble(bb.maxX)
-                val maxY = NukkitMath.ceilDouble(bb.maxY)
-                val maxZ = NukkitMath.ceilDouble(bb.maxZ)
-
-                for (z in minZ..maxZ) {
-                    for (x in minX..maxX) {
-                        for (y in minY..maxY) {
-                            blocksUnder.add(this.level.getBlock(this.temporalVector.setComponents(x.toDouble(), y.toDouble(), z.toDouble())))
-                        }
-                    }
+                bb.forEach { x, y, z ->
+                    blocksUnder.add(this.level.getBlock(this.temporalVector.setComponents(x.toDouble(), y.toDouble(), z.toDouble())))
                 }
             }
 
@@ -409,5 +396,18 @@ class CheatPlayer(val p: Player, cheatPlayer: ICheatPlayer) : ICheatPlayer by (c
 
             return true
         }
+    }
+
+    override fun jump() {
+        val cheatData = acData.antiCheatData
+
+        val time = System.currentTimeMillis()
+        debug { "jump" }
+
+        cheatData.sinceJump = 0
+        cheatData.lastJumpPos = p.location.clone()
+        cheatData.lastJump = time
+        //cheatData.setLastGroundPos(p.getLocation().clone());
+        //cheatData.setLastOnGround(time);
     }
 }

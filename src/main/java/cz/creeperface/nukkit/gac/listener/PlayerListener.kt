@@ -119,7 +119,7 @@ class PlayerListener(private val plugin: GTAnticheat) : Listener {
             //System.out.println("revert speed");
         }
 
-        GACTimings.flyCheck.execute {
+        GACTimings.flyCheck.use {
             val bb = p.getBoundingBox().clone()
 
             val bb2 = bb.clone()
@@ -205,10 +205,9 @@ class PlayerListener(private val plugin: GTAnticheat) : Listener {
 
                         //System.out.println("Y: "+(to.y - data.getLastGroundPos().y)+"          time: "+(data.getLastOnGround() - data.getLastJump()));
 
-                        if (to.y - cheatData.lastGroundPos.y <= 1 && cheatData.lastOnGround > cheatData.lastJump && time - cheatData.lastPacketJump < 1000) {
-                            plugin.onJump(p, acData)
-                            //System.out.println("jump2");
-                        }
+//                        if (to.y - cheatData.lastGroundPos.y <= 1 && cheatData.lastOnGround > cheatData.lastJump && time - cheatData.lastPacketJump < 1000) {
+//                            p.jump()
+//                        }
 
                         val lastJumpPos = cheatData.lastJumpPos
                         val jumpDistance = lastJumpPos.distance(to)
@@ -349,6 +348,7 @@ class PlayerListener(private val plugin: GTAnticheat) : Listener {
                     if (motionData.time < time && motionData.timeY < time) {
                         motionData.clear()
                         acData.speedData.lastNonSpeedPos = to
+                        acData.speedData.lastNonBhopPos = to
                         //System.out.println("clear 1");
                     }
                 }
@@ -358,6 +358,7 @@ class PlayerListener(private val plugin: GTAnticheat) : Listener {
                 //data.speedData.wasRevert = true;
                 //data.speedData.lastRevert = time;
                 acData.speedData.lastNonSpeedPos = from
+                acData.speedData.lastNonBhopPos = from
                 //System.out.println("revert");
             }
 
@@ -367,6 +368,7 @@ class PlayerListener(private val plugin: GTAnticheat) : Listener {
             }
 
             plugin.doKickCheck(acData, p)
+            cheatData.sinceJump++
             cheatData.lastCheck = time
         }
     }
@@ -461,6 +463,7 @@ class PlayerListener(private val plugin: GTAnticheat) : Listener {
 
         val data = p.acData
         data.speedData.lastNonSpeedPos = e.to
+        data.speedData.lastNonBhopPos = e.to
 
         if (e.cause == PlayerTeleportEvent.TeleportCause.PLUGIN) {
             val time = System.currentTimeMillis()

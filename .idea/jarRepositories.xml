@@ -17,6 +17,11 @@
       <option name="url" value="https://repo.nukkitx.com/snapshot" />
     </remote-repository>
     <remote-repository>
+      <option name="id" value="nukkitx-repo" />
+      <option name="name" value="nukkitx-repo" />
+      <option name="url" value="http://repo.nukkitx.com/maven-snapshots/" />
+    </remote-repository>
+    <remote-repository>
       <option name="id" value="jboss.community" />
       <option name="name" value="JBoss Community repository" />
       <option name="url" value="https://repository.jboss.org/nexus/content/repositories/public/" />
