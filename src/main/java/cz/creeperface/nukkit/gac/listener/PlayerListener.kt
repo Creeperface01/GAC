@@ -16,7 +16,6 @@ import cn.nukkit.item.enchantment.Enchantment
 import cn.nukkit.math.Vector2
 import cn.nukkit.math.Vector3
 import cn.nukkit.potion.Effect
-import cn.nukkit.utils.MainLogger
 import cz.creeperface.nukkit.gac.GTAnticheat
 import cz.creeperface.nukkit.gac.NoCheatTask
 import cz.creeperface.nukkit.gac.checks.BlockCollisionCheck
@@ -650,7 +649,7 @@ class PlayerListener(private val plugin: GTAnticheat) : Listener {
 
         val count = data.count { it.toInt() == 0 }
 
-        MainLogger.getLogger().info("count: ${data.size} transparent: $count")
+//        MainLogger.getLogger().info("count: ${data.size} transparent: $count")
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
