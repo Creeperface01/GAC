@@ -96,7 +96,9 @@ class CheatPlayer(val p: Player, cheatPlayer: ICheatPlayer) : ICheatPlayer by (c
                 }
 
                 if (newPos.distanceSquared(this) > GTAnticheat.conf.maxDistance) { //10 blocks
-                    this.sendPosition(forceMovement, packet.yaw.toDouble(), packet.pitch.toDouble(), MovePlayerPacket.MODE_RESET)
+                    this.sendPosition(forceMovement
+                            ?: this, packet.yaw.toDouble(), packet.pitch.toDouble(), MovePlayerPacket.MODE_RESET)
+                    return
                 }
 
                 if (!this.isAlive || !this.spawned) {

@@ -6,11 +6,12 @@ import cn.nukkit.math.AxisAlignedBB
 import cn.nukkit.math.Vector3
 import cn.nukkit.network.SourceInterface
 import cn.nukkit.network.protocol.DataPacket
+import java.net.InetSocketAddress
 
 /**
  * @author CreeperFace
  */
-class NukkitCheatPlayer(interfaz: SourceInterface, clientID: Long?, ip: String, port: Int) : Player(interfaz, clientID, ip, port), ICheatPlayer {
+class NukkitCheatPlayer(interfaz: SourceInterface, clientID: Long?, address: InetSocketAddress) : Player(interfaz, clientID, address), ICheatPlayer {
 
     val cheatPlayer = CheatPlayer(this, this)
 

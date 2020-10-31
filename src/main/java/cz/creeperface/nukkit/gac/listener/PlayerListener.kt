@@ -46,7 +46,7 @@ class PlayerListener(private val plugin: GTAnticheat) : Listener {
         registerEvent(this, plugin, EntityDamageEvent::class.java, { onEntityDamage(it) }, true, EventPriority.MONITOR)
         registerEvent(this, plugin, PlayerJoinEvent::class.java, { onJoin(it) }, true, EventPriority.MONITOR)
         registerEvent(this, plugin, PlayerPreLoginEvent::class.java, { onPreLogin(it) }, true, EventPriority.MONITOR)
-        registerEvent(this, plugin, PlayerCreationEvent::class.java, { onPlayerCreate(it) }, true, EventPriority.MONITOR)
+        registerEvent(this, plugin, PlayerCreationEvent::class.java, { onPlayerCreate(it) }, true, EventPriority.NORMAL)
         registerEvent(this, plugin, PlayerInvalidMoveEvent::class.java, { it.setCancelled() }, true, EventPriority.HIGHEST)
         registerEvent(this, plugin, PlayerToggleGlideEvent::class.java, { onPlayerGlide(it) }, true, EventPriority.MONITOR)
     }

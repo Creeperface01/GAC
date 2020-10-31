@@ -32,6 +32,10 @@ class GTAnticheat : PluginBase(), Listener {
 
     private val enabledLevels = IntOpenHashSet()
 
+    init {
+        Server.getInstance().network.injectGACInterface()
+    }
+
     override fun onLoad() {
         instance = this
 
@@ -60,7 +64,6 @@ class GTAnticheat : PluginBase(), Listener {
 
         Messages.translate("kick_player", "fly", "test")
     }
-
 
 
     fun doKickCheck(data: ACData, p: Player) {
