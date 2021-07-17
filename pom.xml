@@ -9,15 +9,15 @@
     <version>1.0</version>
 
     <properties>
-        <kotlin.version>1.4.10</kotlin.version>
-        <lombok.version>1.18.2</lombok.version>
+        <kotlin.version>1.4.31</kotlin.version>
+        <lombok.version>1.18.20</lombok.version>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
-        <jars>C:\Users\honza\.m2\repository</jars>
-        <jre.path>C:\Program Files\Java\jdk-9.0.4</jre.path>
+        <!--        <jars>C:\Users\honza\.m2\repository</jars>-->
+        <!--        <jre.path>C:\Program Files\Java\jdk-9.0.4</jre.path>-->
         <kotlin.compiler.incremental>true</kotlin.compiler.incremental>
         <kotlin.compiler.jvmTarget>1.8</kotlin.compiler.jvmTarget>
-        <kotlin.compiler.jdkHome>C:\Program Files\Java\jdk-9.0.4</kotlin.compiler.jdkHome>
+        <!--        <kotlin.compiler.jdkHome>C:\Program Files\Java\jdk-9.0.4</kotlin.compiler.jdkHome>-->
     </properties>
 
     <repositories>
@@ -86,56 +86,72 @@
                     </annotationProcessorPaths>
                 </configuration>
             </plugin>
+            <!--            <plugin>-->
+            <!--                <groupId>com.github.wvengen</groupId>-->
+            <!--                <artifactId>proguard-maven-plugin</artifactId>-->
+            <!--                <version>2.3.1</version>-->
+            <!--                <executions>-->
+            <!--                    <execution>-->
+            <!--                        <phase>package</phase>-->
+            <!--                        <goals>-->
+            <!--                            <goal>proguard</goal>-->
+            <!--                        </goals>-->
+            <!--                    </execution>-->
+            <!--                </executions>-->
+            <!--                <configuration>-->
+            <!--                    <obfuscate>true</obfuscate>-->
+            <!--                    <attach>true</attach>-->
+            <!--                    <appendClassifier>false</appendClassifier>-->
+            <!--                    <injar>${project.build.finalName}.jar</injar>-->
+            <!--                    <outjar>${project.build.finalName}-OBFUSCATED.jar</outjar>-->
+            <!--                    <libs>-->
+            <!--                        &lt;!&ndash;                        <lib>${jre.path}/jmods/java.base.jmod</lib>&ndash;&gt;-->
+            <!--                        &lt;!&ndash;                        <lib>${jre.path}/lib/rt.jar</lib>&ndash;&gt;-->
+            <!--                        &lt;!&ndash;                        <lib>${jre.path}/lib/jce.jar</lib>&ndash;&gt;-->
+            <!--                        &lt;!&ndash;                        <lib>${jre.path}/lib/ext/sunjce_provider.jar</lib>&ndash;&gt;-->
+            <!--                    </libs>-->
+            <!--                    <options>-->
+            <!--                        <option>-keepattributes Exceptions,SourceFile,LineNumberTable</option>-->
+            <!--                        <option>-repackageclasses cz/creeperface/nukkit/gac</option>-->
+            <!--                        <option>-keep class cz.creeperface.nukkit.gac.GTAnticheat</option>-->
+            <!--                        <option>-keep public class cz.creeperface.nukkit.gac.player.NukkitCheatPlayer {-->
+            <!--                            public &lt;init&gt;(...);-->
+            <!--                            }-->
+            <!--                        </option>-->
+            <!--                        <option>-keep public class cz.creeperface.nukkit.gac.checks.NukerCheck {-->
+            <!--                            public boolean run(...);-->
+            <!--                            }-->
+            <!--                        </option>-->
+            <!--                        <option>-keep public class cz.creeperface.nukkit.gac.player.SynapseCheatPlayer {-->
+            <!--                            public &lt;init&gt;(...);-->
+            <!--                            }-->
+            <!--                        </option>-->
+            <!--                        <option>-dontshrink</option>-->
+            <!--                        <option>-allowaccessmodification</option>-->
+            <!--                        <option>-ignorewarnings</option>-->
+            <!--                    </options>-->
+            <!--                    <exclusions>-->
+            <!--                        <exclusion>-->
+            <!--                            <groupId>org.projectlombok</groupId>-->
+            <!--                            <artifactId>lombok</artifactId>-->
+            <!--                        </exclusion>-->
+            <!--                    </exclusions>-->
+            <!--                </configuration>-->
+            <!--            </plugin>-->
             <plugin>
-                <groupId>com.github.wvengen</groupId>
-                <artifactId>proguard-maven-plugin</artifactId>
-                <version>2.3.1</version>
+                <artifactId>maven-assembly-plugin</artifactId>
                 <executions>
                     <execution>
                         <phase>package</phase>
                         <goals>
-                            <goal>proguard</goal>
+                            <goal>single</goal>
                         </goals>
                     </execution>
                 </executions>
                 <configuration>
-                    <obfuscate>true</obfuscate>
-                    <attach>true</attach>
-                    <appendClassifier>false</appendClassifier>
-                    <injar>${project.build.finalName}.jar</injar>
-                    <outjar>${project.build.finalName}-OBFUSCATED.jar</outjar>
-                    <libs>
-                        <lib>${jre.path}/jmods/java.base.jmod</lib>
-                        <!--                        <lib>${jre.path}/lib/rt.jar</lib>-->
-                        <!--                        <lib>${jre.path}/lib/jce.jar</lib>-->
-                        <!--                        <lib>${jre.path}/lib/ext/sunjce_provider.jar</lib>-->
-                    </libs>
-                    <options>
-                        <option>-keepattributes Exceptions,SourceFile,LineNumberTable</option>
-                        <option>-repackageclasses cz/creeperface/nukkit/gac</option>
-                        <option>-keep class cz.creeperface.nukkit.gac.GTAnticheat</option>
-                        <option>-keep public class cz.creeperface.nukkit.gac.player.NukkitCheatPlayer {
-                            public &lt;init&gt;(...);
-                            }
-                        </option>
-                        <option>-keep public class cz.creeperface.nukkit.gac.checks.NukerCheck {
-                            public boolean run(...);
-                            }
-                        </option>
-                        <option>-keep public class cz.creeperface.nukkit.gac.player.SynapseCheatPlayer {
-                            public &lt;init&gt;(...);
-                            }
-                        </option>
-                        <option>-dontshrink</option>
-                        <option>-allowaccessmodification</option>
-                        <option>-ignorewarnings</option>
-                    </options>
-                    <exclusions>
-                        <exclusion>
-                            <groupId>org.projectlombok</groupId>
-                            <artifactId>lombok</artifactId>
-                        </exclusion>
-                    </exclusions>
+                    <descriptorRefs>
+                        <descriptorRef>jar-with-dependencies</descriptorRef>
+                    </descriptorRefs>
                 </configuration>
             </plugin>
         </plugins>
@@ -178,11 +194,10 @@
             <version>${lombok.version}</version>
             <scope>provided</scope>
         </dependency>
-        <!--        <dependency>-->
-        <!--            <groupId>org.jooq</groupId>-->
-        <!--            <artifactId>joor-java-8</artifactId>-->
-        <!--            <version>0.9.13</version>-->
-        <!--            <scope>compile</scope>-->
-        <!--        </dependency>-->
+        <dependency>
+            <groupId>org.jooq</groupId>
+            <artifactId>joor-java-8</artifactId>
+            <version>0.9.13</version>
+        </dependency>
     </dependencies>
 </project>

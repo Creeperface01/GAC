@@ -15,7 +15,7 @@ TODO list
 --------------
 - [ ] cobweb support
 - [ ] elytra support
-- [ ] bhop detection
+- [x] bhop detection
 - [ ] better glide detection
 - [ ] blink detection
 - [ ] improve/rework jump handling
