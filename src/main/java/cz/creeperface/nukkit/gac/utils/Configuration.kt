@@ -19,7 +19,7 @@ data class Configuration(
 
     companion object {
 
-        const val VERSION = 4
+        const val VERSION = 5
     }
 }
 

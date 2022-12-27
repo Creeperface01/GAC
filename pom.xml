@@ -9,7 +9,7 @@
     <version>1.0</version>
 
     <properties>
-        <kotlin.version>1.4.31</kotlin.version>
+        <kotlin.version>1.7.22</kotlin.version>
         <lombok.version>1.18.20</lombok.version>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
@@ -23,7 +23,7 @@
     <repositories>
         <repository>
             <id>nukkitx-repo</id>
-            <url>http://repo.nukkitx.com/maven-snapshots/</url>
+            <url>https://repo.nukkitx.com/maven-snapshots/</url>
         </repository>
     </repositories>
 

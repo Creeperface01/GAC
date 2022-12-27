@@ -11,7 +11,7 @@ private val networkAdvancedInterfaces by lazy {
 }
 
 fun Network.injectGACInterface() {
-    val raknet = this.interfaces.find { it is RakNetInterface } as? RakNetInterface ?: return
+    val raknet = this.interfaces.filterIsInstance<RakNetInterface>().firstOrNull() ?: return
 
     this.interfaces.remove(raknet)
     networkAdvancedInterfaces.remove(raknet)
